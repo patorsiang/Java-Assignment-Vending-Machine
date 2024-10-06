@@ -26,30 +26,133 @@ Wednesday, 6 November 2024, 11:55 PM
 ## Task list
 
 - [x] list Object class
-- [ ] OOP design
+- [x] OOP design
 - [ ] Complete the code
 
 ## Object Class list
 
-- [ ] VendingMachine
+- [x] VendingMachine
   - [ ] state
-  - [ ] return remaining change to a user
-- [ ] Coin -> Enumeration
-  - [ ] 2 pounds
-  - [ ] 1 pound
-  - [ ] 50 pence
-  - [ ] 20 pence
-  - [ ] 10 pence
-  - [ ] 5 pence
-  - [ ] 1 penny
-- [ ] Item
-- [ ] User
-  - [ ] purchase item
-  - [ ] deposit money
-  - [ ] withdraw the choice (if depositing enough money)
-  - [ ] cancel their purchase -> withdraw the money the they deposit
-- [ ] Owner, admin
-  - [ ] add new item
-  - [ ] add new content
-  - [ ] deposit money
-  - [ ] withdraw money
+  - [x] return remaining change to a user
+- [x] Coin -> Enumeration
+  - [x] 2 pounds
+  - [x] 1 pound
+  - [x] 50 pence
+  - [x] 20 pence
+  - [x] 10 pence
+  - [x] 5 pence
+  - [x] 1 penny
+- [x] Item
+  - [x] code
+  - [x] name
+  - [x] price
+- [x] User
+  - [x] purchase item
+  - [x] deposit money
+  - [x] withdraw the choice (if depositing enough money)
+  - [x] cancel their purchase -> withdraw the money the they deposit
+- [x] Admin
+  - [x] add new item
+  - [x] add new content
+  - [x] deposit money
+  - [x] withdraw money
+
+## OOP design
+
+```mermaid
+---
+title: Vending Machine
+---
+classDiagram
+
+VendingMachine "1" o-- "0..*" Coin : accepts
+VendingMachine "1" o-- "0..*" Item : contains
+
+VendingMachine "1" <--> "0..*" Customer : returnChange/getChange
+VendingMachine --* MachineState
+
+Exception --|> InsufficientMoneyException
+Exception --|> InsufficientCoinsException
+Exception --|> OutStocksException
+Exception --|> InvalidItemCodeException
+Exception --|> OutOfLimitOfContentsException
+
+Customer "1" --> "0..*" Coin : inserts | withdraws
+Customer "1" --> "0..1" Item : select | withdraw | cancel
+
+Admin "1" --> "0..*" Coin : fill | withdraws
+Admin "1" --> "0..1" Item : fill | addNew
+
+class Coin {
+    <<enumeration>>
+    ONE_PENCE(0.01)
+    TWO_PENCE(0.02)
+    FIVE_PENCE(0.05)
+    TEN_PENCE(0.10)
+    TWENTY_PENCE(0.20)
+    FIFTY_PENCE(0.50)
+    ONE_POUND(1.00)
+    TWO_POUNDS(2.00)
+}
+
+class Customer {
+  String selectedCode
+  HashMap~Coin, number~ insertedCoin
+
+  insertCoin(Coin coin)
+  getCurrentBalance()
+  selectItem(String code)
+  getItemCode()
+  requestRefund()
+  requestPurchaseItem()
+  requestChange()
+  collect()
+}
+
+class Admin {
+  HashMap~Coin,amount~ withdrawCoin()
+  addCoin(Coin money, amount)
+  fillItem(String code, amount)
+  addNewItem(Item newItem)
+}
+
+class Item {
+  String code
+  String name
+  float price
+  int amount
+
+  increase()
+  decrease()
+}
+
+class VendingMachine {
+  HashMap~Coin,amount~ coins
+  List~Item~ items
+  String selectedCode
+  HashMap~Coin,amount~ holdCoins
+
+  withdrawCoin()
+  addNewItem(Item newItem)
+  filledCoin(Coin money, amount)
+  addNewContent()
+  getShelfItem()
+  setSelectedCode(String code)
+  insertHoldCoins(Coin coin)
+  returnChange(Float total, Float inserted)
+  getHoldCoins()
+  sellItem()
+  sentItem()
+  printState()
+}
+
+class MachineState
+
+class InsufficientMoneyException
+class InsufficientCoinsException
+class OutStocksException
+class InvalidItemCodeException
+
+%% x > 99
+class OutOfLimitOfContentsException
+```
