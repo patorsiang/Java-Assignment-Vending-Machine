@@ -32,7 +32,7 @@ Wednesday, 6 November 2024, 11:55 PM
 ## Object Class list
 
 - [x] VendingMachine
-  - [ ] state
+  - [x] state
   - [x] return remaining change to a user
 - [x] Coin -> Enumeration
   - [x] 2 pounds
@@ -61,15 +61,14 @@ Wednesday, 6 November 2024, 11:55 PM
 
 ```mermaid
 ---
-title: Vending Machine
+title: Vending Machine System
 ---
 classDiagram
-
 VendingMachine "1" o-- "0..*" Coin : accepts
 VendingMachine "1" o-- "0..*" Item : contains
 
 VendingMachine "1" <--> "0..*" Customer : returnChange/getChange
-VendingMachine --* MachineState
+VendingMachine "1" *-- MachineState : manages
 
 Exception --|> InsufficientMoneyException
 Exception --|> InsufficientCoinsException
@@ -94,6 +93,24 @@ class Coin {
     ONE_POUND(1.00)
     TWO_POUNDS(2.00)
 }
+
+class CustomerActions {
+    +insertCoin(Coin coin)
+    +selectItem(String code)
+    +requestRefund()
+    +requestPurchaseItem()
+    +collect()
+}
+
+class AdminActions {
+    +addCoin(Coin coin, int amount)
+    +withdrawCoins()
+    +addItem(Item item)
+    +restockItem(String code, int amount)
+}
+
+VendingMachine ..|> CustomerActions
+VendingMachine ..|> AdminActions
 
 class Customer {
   String selectedCode
@@ -144,9 +161,23 @@ class VendingMachine {
   sellItem()
   sentItem()
   printState()
+  validateItemCode(String code) : throws InvalidItemCodeException
+  validateCapacity() : throws OutOfLimitOfContentsException
 }
 
-class MachineState
+class MachineState {
+    +String state
+    +getState()
+    +setState(String newState)
+    +transitionToIdle()
+    +transitionToWaitingForSelection()
+    +transitionToDispensingItem()
+    +isWaitingForSelection()
+    +isDispensingItem()
+    +checkForInsufficientMoney() : throws InsufficientMoneyException
+    +checkForOutOfStock() : throws OutStocksException
+    +checkForInsufficientCoinsForChange() : throws InsufficientCoinsException
+}
 
 class InsufficientMoneyException
 class InsufficientCoinsException
@@ -155,4 +186,11 @@ class InvalidItemCodeException
 
 %% x > 99
 class OutOfLimitOfContentsException
+
+MachineState --> InsufficientMoneyException : checks
+MachineState --> InsufficientCoinsException : checks
+MachineState --> OutStocksException : checks
+VendingMachine --> InvalidItemCodeException : validates
+VendingMachine --> OutOfLimitOfContentsException : validates
+
 ```
