@@ -63,6 +63,7 @@ Wednesday, 6 November 2024, 11:55 PM
 ---
 title: Vending Machine System
 ---
+
 classDiagram
 VendingMachine "1" o-- "0..*" Coin : accepts
 VendingMachine "1" o-- "0..*" Item : contains
@@ -83,7 +84,7 @@ Admin "1" --> "0..*" Coin : fill | withdraws
 Admin "1" --> "0..1" Item : fill | addNew
 
 class Coin {
-    <<enumeration>>
+    <<Enumeration>>
     ONE_PENCE(0.01)
     TWO_PENCE(0.02)
     FIVE_PENCE(0.05)
@@ -95,6 +96,7 @@ class Coin {
 }
 
 class CustomerActions {
+    <<Interface>>
     +insertCoin(Coin coin)
     +selectItem(String code)
     +requestRefund()
@@ -103,6 +105,7 @@ class CustomerActions {
 }
 
 class AdminActions {
+    <<Interface>>
     +addCoin(Coin coin, int amount)
     +withdrawCoins()
     +addItem(Item item)
@@ -144,6 +147,7 @@ class Item {
 }
 
 class VendingMachine {
+  <<Service>>
   HashMap~Coin,amount~ coins
   List~Item~ items
   String selectedCode
@@ -166,6 +170,7 @@ class VendingMachine {
 }
 
 class MachineState {
+    <<Service>>
     +String state
     +getState()
     +setState(String newState)
