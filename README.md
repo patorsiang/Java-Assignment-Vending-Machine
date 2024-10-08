@@ -27,7 +27,20 @@ Wednesday, 6 November 2024, 11:55 PM
 
 - [x] list Object class
 - [x] OOP design
-- [ ] Complete the code
+- [/] Complete the code
+  - [x] Coin (Enumeration)
+  - [ ] CustomerActions (Interface)
+  - [ ] AdminActions (Interface)
+  - [ ] Customer
+  - [ ] Admin
+  - [ ] Item
+  - [ ] VendingMachine (Service)
+  - [ ] MachineState (Service)
+  - [ ] InsufficientMoneyException
+  - [ ] InsufficientCoinsException
+  - [ ] OutStocksException
+  - [ ] InvalidItemCodeException
+  - [ ] InvalidItemCodeException
 
 ## Object Class list
 
