@@ -1,5 +1,5 @@
 /**
- * Coin as Enumeration, there are only
+ * This class is represents a coin type
  * - 2 pounds,
  * - 1 pounds,
  * - 50 pence,
