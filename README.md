@@ -33,13 +33,12 @@ Wednesday, 6 November 2024, 11:55 PM
   - [ ] AdminActions (Interface)
   - [ ] Customer
   - [ ] Admin
-  - [ ] Item
+  - [x] Item
   - [ ] VendingMachine (Service)
   - [ ] MachineState (Service)
   - [ ] InsufficientMoneyException
   - [ ] InsufficientCoinsException
   - [ ] OutStocksException
-  - [ ] InvalidItemCodeException
   - [ ] InvalidItemCodeException
 
 ## Object Class list
@@ -110,23 +109,28 @@ class Coin {
 
 class CustomerActions {
     <<Interface>>
-    +insertCoin(Coin coin)
-    +selectItem(String code)
-    +requestRefund()
-    +requestPurchaseItem()
-    +collect()
+    insertCoin(Coin coin)
+    getCurrentBalance()
+    selectItem(String code)
+    getItemCode()
+    requestRefund()
+    requestPurchaseItem()
+    requestChange()
+    collect()
 }
 
 class AdminActions {
     <<Interface>>
-    +addCoin(Coin coin, int amount)
+    +addCoin(Coin coin, int quantity)
     +withdrawCoins()
     +addItem(Item item)
-    +restockItem(String code, int amount)
+    +restockItem(String code, int quantity)
 }
 
 VendingMachine ..|> CustomerActions
 VendingMachine ..|> AdminActions
+Customer ..|> CustomerActions
+Admin ..|> AdminActions
 
 class Customer {
   String selectedCode
@@ -143,17 +147,17 @@ class Customer {
 }
 
 class Admin {
-  HashMap~Coin,amount~ withdrawCoin()
-  addCoin(Coin money, amount)
-  fillItem(String code, amount)
-  addNewItem(Item newItem)
+  addCoin(Coin coin, int quantity)
+  HashMap~Coin,quantity~ withdrawCoins()
+  addItem(Item item)
+  restockItem(String code, int quantity)
 }
 
 class Item {
   String code
   String name
-  float price
-  int amount
+  double price
+  int quantity
 
   increase()
   decrease()
@@ -161,19 +165,19 @@ class Item {
 
 class VendingMachine {
   <<Service>>
-  HashMap~Coin,amount~ coins
+  HashMap~Coin,quantity~ coins
   List~Item~ items
   String selectedCode
-  HashMap~Coin,amount~ holdCoins
+  HashMap~Coin,quantity~ holdCoins
 
   withdrawCoin()
   addNewItem(Item newItem)
-  filledCoin(Coin money, amount)
+  filledCoin(Coin money, quantity)
   addNewContent()
   getShelfItem()
   setSelectedCode(String code)
   insertHoldCoins(Coin coin)
-  returnChange(Float total, Float inserted)
+  returnChange(double total, double inserted)
   getHoldCoins()
   sellItem()
   sentItem()
