@@ -1,4 +1,5 @@
 import org.junit.jupiter.api.*;
+
 import java.io.*;
 import java.util.*;
 
@@ -17,7 +18,7 @@ public class VendingMachineServiceTest {
         vendingMachine = new VendingMachineService();
         coke = new Item("01", "coke", 10);
         apple = new Item("02", "apple", 5);
-        expected = new ArrayList<Item>();
+        expected = new ArrayList<>();
     }
 
     @Test
@@ -53,7 +54,7 @@ public class VendingMachineServiceTest {
 
     @Test
     @Order(4)
-    void testWithdrawCoin () {
+    void testWithdrawCoin() {
         var coins = vendingMachine.withdrawCoins();
         var remainCoins = vendingMachine.getCoins();
         assertEquals(Map.of(Coin.ONE_PENNY, 20, Coin.TWO_PENCE, 10), coins);
@@ -62,7 +63,7 @@ public class VendingMachineServiceTest {
 
     @Test
     @Order(5)
-    void testAddItem () {
+    void testAddItem() {
         expected.add(coke);
         var items = vendingMachine.addItem(coke);
         assertEquals(expected, items);
@@ -70,7 +71,7 @@ public class VendingMachineServiceTest {
 
     @Test
     @Order(10)
-    void testAddSecItem () {
+    void testAddSecItem() {
         expected.add(apple);
         var items = vendingMachine.addItem(apple);
         assertEquals(expected, items);
@@ -127,5 +128,49 @@ public class VendingMachineServiceTest {
 
         // Restore the original System.out
         System.setOut(originalOut);
+    }
+
+    @Test
+    @Order(13)
+    void testSetSelectedItem01Success() {
+        vendingMachine.setSelectedItem("01");
+        assertEquals("01", vendingMachine.getSelectedItem());
+    }
+
+    @Test
+    @Order(14)
+    void testSetSelectedItem02Success() {
+        vendingMachine.setSelectedItem("02");
+        assertEquals("02", vendingMachine.getSelectedItem());
+    }
+
+    @Test
+    void testSetSelectedItem00Failure() {
+        Throwable exception = assertThrows(IllegalArgumentException.class, () -> vendingMachine.setSelectedItem("00"));
+        assertEquals("Invalid code", exception.getMessage());
+    }
+
+    @Test
+    void testSetSelectedItem03Failure() {
+        Throwable exception = assertThrows(IllegalArgumentException.class, () -> vendingMachine.setSelectedItem("03"));
+        assertEquals("Item does not exist", exception.getMessage());
+    }
+
+    @Test
+    @Order(15)
+    void testInsertCoin() {
+        Map<Coin, Integer> holdCoinInSys = Map.of();
+        Map<Coin, Integer> holdCoin = new HashMap<>();
+        for (int i = 0; i < 10; i++) {
+            if (i % 2 == 1) {
+                holdCoinInSys = vendingMachine.insertCoin(Coin.ONE_PENNY);
+            } else {
+                holdCoinInSys = vendingMachine.insertCoin(Coin.TWO_PENCE);
+            }
+
+        }
+        holdCoin.put(Coin.ONE_PENNY, 5);
+        holdCoin.put(Coin.TWO_PENCE, 5);
+        assertEquals(holdCoin, holdCoinInSys);
     }
 }

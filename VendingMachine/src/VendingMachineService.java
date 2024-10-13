@@ -2,10 +2,10 @@ import java.util.*;
 
 public class VendingMachineService extends ItemVerification {
 
-    Map<Coin, Integer> coins;
-    List<Item> items;
-    String selectedItem;
-    Map<Coin, Integer> holdCoins;
+    private final Map<Coin, Integer> coins;
+    private final Map<Coin, Integer> holdCoins;
+    private final List<Item> items;
+    private String selectedItem;
 
     VendingMachineService() {
         this.coins = new HashMap<>();
@@ -63,5 +63,35 @@ public class VendingMachineService extends ItemVerification {
         for (var item : items) {
             System.out.println(item.printItem());
         }
+    }
+
+    void setSelectedItem(String code) {
+        validateCode(code);
+        var checked = false;
+        for (var item: items) {
+            if (item.getCode().equals(code)) {
+                this.selectedItem = code;
+                checked = true;
+                break;
+            }
+        }
+
+        if (!checked) {
+            selectedItem = null;
+            throw new IllegalArgumentException("Item does not exist");
+        }
+    }
+
+    String getSelectedItem() {
+        return selectedItem;
+    }
+
+    Map<Coin, Integer> insertCoin(Coin coin) {
+        if (!holdCoins.containsKey(coin)) {
+            holdCoins.put(coin, 1);
+        } else {
+            holdCoins.put(coin, holdCoins.get(coin) + 1);
+        }
+        return holdCoins;
     }
 }
