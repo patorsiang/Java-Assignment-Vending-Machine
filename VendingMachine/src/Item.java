@@ -1,10 +1,11 @@
-public class Item {
+public class Item extends ItemVerification {
     private final String code;
     private final String name;
     private double price;
     private int quantity;
 
     Item(String code, String name, double price) {
+        validateCode(code);
         this.code = code;
         this.name = name;
         this.price = price;
@@ -15,10 +16,8 @@ public class Item {
         return this.code;
     }
 
-
-
     String printItem() {
-        return this.code + " " + this.name + " ￡" + String.format("%.2f", this.price) + " " + this.quantity;
+        return this.code + "\t" + this.name + "\t￡" + String.format("%.2f", this.price) + "\t" + this.quantity;
     }
 
     void changePrice(double newPrice) throws IllegalArgumentException {

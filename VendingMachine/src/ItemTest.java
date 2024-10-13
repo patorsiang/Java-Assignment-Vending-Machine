@@ -13,6 +13,18 @@ public class ItemTest {
     }
 
     @Test
+    void testSetItemSuccess() {
+        Item chip = new Item("02", "Chip", 1);
+        assertEquals("02", chip.getCode());
+    }
+
+    @Test
+    void testSetItemError() {
+        Throwable exception = assertThrows(IllegalArgumentException.class, () -> new Item("00", "coke", 1.25));
+        assertEquals("Invalid code", exception.getMessage());
+    }
+
+    @Test
     void testGetCode() {
         assertEquals("01", item.getCode());
     }
@@ -20,14 +32,14 @@ public class ItemTest {
     @Test
     @Order(1)
     void testPrintItem() {
-        assertEquals("01 Coke ￡1.25 0", item.printItem());
+        assertEquals("01\tCoke\t￡1.25\t0", item.printItem());
     }
 
     @Test
     @Order(2)
     void testChangePriceSuccess() {
         item.changePrice(1.5);
-        assertEquals("01 Coke ￡1.50 0", item.printItem());
+        assertEquals("01\tCoke\t￡1.50\t0", item.printItem());
     }
 
     @Test
@@ -44,13 +56,13 @@ public class ItemTest {
     }
 
     @Test
-    void testIncreaseQuantityFail() {
+    void testIncreaseQuantityFailFull() {
         Throwable exception = assertThrows(OverflowingShelfException.class, () -> item.increaseQuantity(100));
         assertEquals("This item, 01, reached the limit of its' shelf.", exception.getMessage());
     }
 
     @Test
-    void testIncreaseQuantityFail2() {
+    void testIncreaseQuantityFailNegative() {
         Throwable exception = assertThrows(IllegalArgumentException.class, () -> item.increaseQuantity(-2));
         assertEquals("Quantity cannot be negative", exception.getMessage());
     }

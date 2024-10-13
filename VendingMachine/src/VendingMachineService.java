@@ -1,6 +1,6 @@
 import java.util.*;
 
-public class VendingMachineService {
+public class VendingMachineService extends ItemVerification {
 
     Map<Coin, Integer> coins;
     List<Item> items;
@@ -31,6 +31,11 @@ public class VendingMachineService {
     }
 
     List<Item> addItem(Item item) {
+        for (var storeditem: items) {
+            if (item.getCode().equals(storeditem.getCode())) {
+                throw new IllegalArgumentException("Item already exists");
+            }
+        }
         items.add(item);
         return items;
     }
@@ -41,4 +46,22 @@ public class VendingMachineService {
         return withdrawCoins;
     }
 
+    List<Item> fillItem (String code, int quantity) throws OverflowingShelfException {
+
+        validateCode(code);
+
+        for (var item : items) {
+            if (item.getCode().equals(code)) {
+                item.increaseQuantity(quantity);
+            }
+        }
+        return items;
+    }
+
+    void listShelfItems () {
+        System.out.println("Code\tName\tPrice\tQuantity");
+        for (var item : items) {
+            System.out.println(item.printItem());
+        }
+    }
 }
