@@ -1,3 +1,8 @@
+package Tests;
+
+import Exceptions.NotEnoughException;
+import Exceptions.OverflowingShelfException;
+import Objects.Item;
 import org.junit.jupiter.api.*;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -15,7 +20,7 @@ public class ItemTest {
     @Test
     void testSetItemSuccess() {
         Item chip = new Item("02", "Chip", 1);
-        assertEquals("02", chip.getCode());
+        Assertions.assertEquals("02", chip.getCode());
     }
 
     @Test
@@ -26,20 +31,20 @@ public class ItemTest {
 
     @Test
     void testGetCode() {
-        assertEquals("01", item.getCode());
+        Assertions.assertEquals("01", item.getCode());
     }
 
     @Test
     @Order(1)
     void testPrintItem() {
-        assertEquals("01\tCoke\t￡1.25\t0", item.printItem());
+        Assertions.assertEquals("01\tCoke\t￡1.25\t0", item.printItem());
     }
 
     @Test
     @Order(2)
     void testChangePriceSuccess() {
         item.changePrice(1.5);
-        assertEquals("01\tCoke\t￡1.50\t0", item.printItem());
+        Assertions.assertEquals("01\tCoke\t￡1.50\t0", item.printItem());
     }
 
     @Test
@@ -50,9 +55,9 @@ public class ItemTest {
 
     @Test
     @Order(3)
-    void testIncreaseQuantitySuccess() throws OverflowingShelfException {
+    void testIncreaseQuantitySuccess() throws OverflowingShelfException, OverflowingShelfException {
         item.increaseQuantity(10);
-        assertEquals("01 Coke ￡1.50 10", item.printItem());
+        Assertions.assertEquals("01 Coke ￡1.50 10", item.printItem());
     }
 
     @Test
@@ -69,9 +74,9 @@ public class ItemTest {
 
     @Test
     @Order(4)
-    void testDecreaseQuantitySuccess() throws NotEnoughException, OverflowingShelfException {
+    void testDecreaseQuantitySuccess() throws NotEnoughException {
         item.decreaseQuantity(2);
-        assertEquals("01 Coke ￡1.50 8", item.printItem());
+        Assertions.assertEquals("01 Coke ￡1.50 8", item.printItem());
     }
 
     @Test

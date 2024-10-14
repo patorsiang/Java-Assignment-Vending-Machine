@@ -5,7 +5,7 @@ Program Description:
 <Description>
 
 Classes and Interfaces:
-1. Coin
+1. Constants.Coin
 Description: This class is represents a coin type.
 2. VendingMachine
 <Description: what they do and why>

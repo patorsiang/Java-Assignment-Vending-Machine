@@ -1,4 +1,7 @@
-import org.junit.jupiter.api.Test;
+package Tests;
+
+import Constants.Coin;
+import org.junit.jupiter.api.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 

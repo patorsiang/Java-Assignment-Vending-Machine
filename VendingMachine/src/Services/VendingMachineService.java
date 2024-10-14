@@ -1,3 +1,10 @@
+package Services;
+
+import Constants.Coin;
+import Objects.Item;
+import Exceptions.OverflowingShelfException;
+import Verifications.ItemVerification;
+
 import java.util.*;
 
 public class VendingMachineService extends ItemVerification {
@@ -7,14 +14,14 @@ public class VendingMachineService extends ItemVerification {
     private final List<Item> items;
     private String selectedItem;
 
-    VendingMachineService() {
+    public VendingMachineService() {
         this.coins = new HashMap<>();
         this.items = new ArrayList<>();
         this.selectedItem = null;
         this.holdCoins = new HashMap<>();
     }
 
-    Map<Coin, Integer> fillCoins(Coin coin, int quantity) {
+    public Map<Coin, Integer> fillCoins(Coin coin, int quantity) {
         if (quantity < 0) {
             throw new IllegalArgumentException("Quantity cannot be negative");
         }
@@ -26,11 +33,11 @@ public class VendingMachineService extends ItemVerification {
         return coins;
     }
 
-    Map<Coin, Integer> getCoins() {
+    public Map<Coin, Integer> getCoins() {
         return coins;
     }
 
-    List<Item> addItem(Item item) {
+    public List<Item> addItem(Item item) {
         for (var storeditem: items) {
             if (item.getCode().equals(storeditem.getCode())) {
                 throw new IllegalArgumentException("Item already exists");
@@ -40,15 +47,15 @@ public class VendingMachineService extends ItemVerification {
         return items;
     }
 
-    Map<Coin, Integer> withdrawCoins() {
+    public Map<Coin, Integer> withdrawCoins() {
         var withdrawCoins = new HashMap<>(coins);
         coins.clear();
         return withdrawCoins;
     }
 
-    List<Item> fillItem (String code, int quantity) throws OverflowingShelfException {
+    public List<Item> fillItem(String code, int quantity) throws OverflowingShelfException {
 
-        validateCode(code);
+        ItemVerification.validateCode(code);
 
         for (var item : items) {
             if (item.getCode().equals(code)) {
@@ -58,15 +65,15 @@ public class VendingMachineService extends ItemVerification {
         return items;
     }
 
-    void listShelfItems () {
+    public void listShelfItems() {
         System.out.println("Code\tName\tPrice\tQuantity");
         for (var item : items) {
             System.out.println(item.printItem());
         }
     }
 
-    void setSelectedItem(String code) {
-        validateCode(code);
+    public void setSelectedItem(String code) {
+        ItemVerification.validateCode(code);
         var checked = false;
         for (var item: items) {
             if (item.getCode().equals(code)) {
@@ -82,11 +89,11 @@ public class VendingMachineService extends ItemVerification {
         }
     }
 
-    String getSelectedItem() {
+    public String getSelectedItem() {
         return selectedItem;
     }
 
-    Map<Coin, Integer> insertCoin(Coin coin) {
+    public Map<Coin, Integer> insertCoin(Coin coin) {
         if (!holdCoins.containsKey(coin)) {
             holdCoins.put(coin, 1);
         } else {

@@ -1,3 +1,9 @@
+package Tests;
+
+import Constants.Coin;
+import Exceptions.OverflowingShelfException;
+import Services.VendingMachineService;
+import Objects.Item;
 import org.junit.jupiter.api.*;
 
 import java.io.*;
@@ -134,14 +140,14 @@ public class VendingMachineServiceTest {
     @Order(13)
     void testSetSelectedItem01Success() {
         vendingMachine.setSelectedItem("01");
-        assertEquals("01", vendingMachine.getSelectedItem());
+        Assertions.assertEquals("01", vendingMachine.getSelectedItem());
     }
 
     @Test
     @Order(14)
     void testSetSelectedItem02Success() {
         vendingMachine.setSelectedItem("02");
-        assertEquals("02", vendingMachine.getSelectedItem());
+        Assertions.assertEquals("02", vendingMachine.getSelectedItem());
     }
 
     @Test

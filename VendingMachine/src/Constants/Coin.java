@@ -1,3 +1,5 @@
+package Constants;
+
 /**
  * This class represents a coin type
  * - 2 pounds,

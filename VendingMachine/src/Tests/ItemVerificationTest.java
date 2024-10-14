@@ -1,6 +1,10 @@
+package Tests;
+
 import org.junit.jupiter.api.*;
 
 import static org.junit.jupiter.api.Assertions.*;
+
+import Verifications.ItemVerification;
 
 public class ItemVerificationTest {
 
@@ -19,7 +23,7 @@ public class ItemVerificationTest {
     @Test
     void testValidateCode01() {
         var validated = ItemVerification.validateCode("01");
-        assertTrue(validated);
+        Assertions.assertTrue(validated);
     }
 
 }

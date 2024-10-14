@@ -1,10 +1,16 @@
+package Objects;
+
+import Exceptions.NotEnoughException;
+import Exceptions.OverflowingShelfException;
+import Verifications.ItemVerification;
+
 public class Item extends ItemVerification {
     private final String code;
     private final String name;
     private double price;
     private int quantity;
 
-    Item(String code, String name, double price) {
+    public Item(String code, String name, double price) {
         validateCode(code);
         this.code = code;
         this.name = name;
@@ -12,22 +18,22 @@ public class Item extends ItemVerification {
         this.quantity = 0;
     }
 
-    String getCode() {
+    public String getCode() {
         return this.code;
     }
 
-    String printItem() {
+    public String printItem() {
         return this.code + "\t" + this.name + "\t￡" + String.format("%.2f", this.price) + "\t" + this.quantity;
     }
 
-    void changePrice(double newPrice) throws IllegalArgumentException {
+    public void changePrice(double newPrice) throws IllegalArgumentException {
         if (newPrice < 0) {
             throw new IllegalArgumentException("Price cannot be negative");
         }
         this.price = newPrice;
     }
 
-    void increaseQuantity(int quantity) throws OverflowingShelfException, IllegalArgumentException {
+    public void increaseQuantity(int quantity) throws OverflowingShelfException, IllegalArgumentException {
         if (quantity < 0) {
             throw new IllegalArgumentException("Quantity cannot be negative");
         } else if (quantity + this.quantity > 99) {
@@ -36,7 +42,7 @@ public class Item extends ItemVerification {
         this.quantity += quantity;
     }
 
-    void decreaseQuantity(int quantity) throws NotEnoughException, IllegalArgumentException {
+    public void decreaseQuantity(int quantity) throws NotEnoughException, IllegalArgumentException {
         if (quantity < 0) {
             throw new IllegalArgumentException("Quantity cannot be negative");
         } else if (quantity > this.quantity) {
