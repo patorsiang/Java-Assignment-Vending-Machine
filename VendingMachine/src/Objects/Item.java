@@ -1,10 +1,11 @@
 package Objects;
 
+import Constants.Constants;
 import Exceptions.NotEnoughException;
 import Exceptions.OverflowingShelfException;
-import Verifications.ItemVerification;
+import Verifications.Verification;
 
-public class Item extends ItemVerification {
+public class Item extends Verification {
     private final String code;
     private final String name;
     private double price;
@@ -34,18 +35,14 @@ public class Item extends ItemVerification {
     }
 
     public void increaseQuantity(int quantity) throws OverflowingShelfException, IllegalArgumentException {
-        if (quantity < 0) {
-            throw new IllegalArgumentException("Quantity cannot be negative");
-        } else if (quantity + this.quantity > 99) {
+        if (validateQuantity(quantity) && quantity + this.quantity > Constants.LIMIT_ITEM_QUANTITY_IN_VM) {
             throw new OverflowingShelfException("This item, " + this.code + ", reached the limit of its' shelf.");
         }
         this.quantity += quantity;
     }
 
     public void decreaseQuantity(int quantity) throws NotEnoughException, IllegalArgumentException {
-        if (quantity < 0) {
-            throw new IllegalArgumentException("Quantity cannot be negative");
-        } else if (quantity > this.quantity) {
+        if (validateQuantity(quantity) && quantity > this.quantity) {
             throw new NotEnoughException("This item, " + this.code + ", have not enough stock as you requested.");
         }
         this.quantity -= quantity;

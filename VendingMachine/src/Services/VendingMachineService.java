@@ -1,13 +1,14 @@
 package Services;
 
 import Constants.Coin;
+import Constants.Constants;
 import Objects.Item;
 import Exceptions.OverflowingShelfException;
-import Verifications.ItemVerification;
+import Verifications.Verification;
 
 import java.util.*;
 
-public class VendingMachineService extends ItemVerification {
+public class VendingMachineService extends Verification {
 
     private final Map<Coin, Integer> coins;
     private final Map<Coin, Integer> holdCoins;
@@ -22,13 +23,12 @@ public class VendingMachineService extends ItemVerification {
     }
 
     public Map<Coin, Integer> fillCoins(Coin coin, int quantity) {
-        if (quantity < 0) {
-            throw new IllegalArgumentException("Quantity cannot be negative");
-        }
-        if (!coins.containsKey(coin)) {
-            coins.put(coin, quantity);
-        } else {
-            coins.put(coin, coins.get(coin) + quantity);
+        if (validateLimitQuantity(quantity, Constants.LIMIT_COIN_QUANTITY_IN_VM) && validateQuantity(quantity)) {
+            if (!coins.containsKey(coin)) {
+                coins.put(coin, quantity);
+            } else if (validateLimitQuantity(coins.get(coin) + quantity, Constants.LIMIT_COIN_QUANTITY_IN_VM)) {
+                coins.put(coin, coins.get(coin) + quantity);
+            }
         }
         return coins;
     }
@@ -38,7 +38,7 @@ public class VendingMachineService extends ItemVerification {
     }
 
     public List<Item> addItem(Item item) {
-        for (var storeditem: items) {
+        for (var storeditem : items) {
             if (item.getCode().equals(storeditem.getCode())) {
                 throw new IllegalArgumentException("Item already exists");
             }
@@ -55,7 +55,7 @@ public class VendingMachineService extends ItemVerification {
 
     public List<Item> fillItem(String code, int quantity) throws OverflowingShelfException {
 
-        ItemVerification.validateCode(code);
+        validateCode(code);
 
         for (var item : items) {
             if (item.getCode().equals(code)) {
@@ -73,9 +73,9 @@ public class VendingMachineService extends ItemVerification {
     }
 
     public void setSelectedItem(String code) {
-        ItemVerification.validateCode(code);
+        validateCode(code);
         var checked = false;
-        for (var item: items) {
+        for (var item : items) {
             if (item.getCode().equals(code)) {
                 this.selectedItem = code;
                 checked = true;
@@ -96,9 +96,10 @@ public class VendingMachineService extends ItemVerification {
     public Map<Coin, Integer> insertCoin(Coin coin) {
         if (!holdCoins.containsKey(coin)) {
             holdCoins.put(coin, 1);
-        } else {
+        } else if (validateLimitQuantity(holdCoins.get(coin) + 1, Constants.LIMIT_COIN_QUANTITY_IN_VM)) {
             holdCoins.put(coin, holdCoins.get(coin) + 1);
         }
         return holdCoins;
     }
+
 }
