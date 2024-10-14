@@ -57,7 +57,7 @@ public class ItemTest {
     @Order(3)
     void testIncreaseQuantitySuccess() throws OverflowingShelfException, OverflowingShelfException {
         item.increaseQuantity(10);
-        Assertions.assertEquals("01 Coke ￡1.50 10", item.printItem());
+        Assertions.assertEquals("01\tCoke\t￡1.50\t10", item.printItem());
     }
 
     @Test
@@ -76,7 +76,7 @@ public class ItemTest {
     @Order(4)
     void testDecreaseQuantitySuccess() throws NotEnoughException {
         item.decreaseQuantity(2);
-        Assertions.assertEquals("01 Coke ￡1.50 8", item.printItem());
+        Assertions.assertEquals("01\tCoke\t￡1.50\t8", item.printItem());
     }
 
     @Test
