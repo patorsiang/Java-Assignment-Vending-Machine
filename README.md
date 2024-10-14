@@ -216,3 +216,35 @@ VendingMachine --> InvalidItemCodeException : validates
 VendingMachine --> OutOfLimitOfContentsException : validates
 
 ```
+
+## Note
+
+- mast have
+  - user can user coin
+    - (additional) user can use cash
+  - content
+    - drinks
+    - (additional) Items has type -> drinks, snack
+    - capacity (should set as constant) -> and show the error message where they reached the limit
+  - error state
+  - class should prevent invalid actions
+- (additional) means you can add for making it more realistic
+- print every state and sign even through errors
+  - e.g. add content
+
+  ```cmd
+    You want to add new items?
+    >>> Yes
+    You need to add input code in the pattern of 2 digits of number, name, and price (<dd>, <string>, <price>)
+    >>>
+  ```
+
+### to check that the program is working
+
+- zip
+- unzip
+- run
+- submit
+- download
+- unzip
+- run
