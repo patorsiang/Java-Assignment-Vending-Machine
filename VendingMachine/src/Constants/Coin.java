@@ -1,7 +1,7 @@
 package Constants;
 
 /**
- * This class represents a coin type
+ * This class represents British pound sterling in the form of coins
  * - 2 pounds,
  * - 1 pounds,
  * - 50 pence,
@@ -28,10 +28,10 @@ public enum Coin {
     /**
      * Constructor for the Coin enum.
      *
-     * @param v The value of the coin in pounds.
+     * @param value The value of the coin in pounds.
      */
-    Coin(double v) {
-        this.value = v;
+    Coin(double value) {
+        this.value = value;
     }
 
     /**
