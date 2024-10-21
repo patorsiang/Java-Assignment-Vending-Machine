@@ -1,50 +1,50 @@
 package Objects;
 
-import Constants.Constants;
-import Exceptions.NotEnoughException;
-import Exceptions.OverflowingShelfException;
-import Verifications.Verification;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-public class Item extends Verification {
-    private final String code;
-    private final String name;
-    private double price;
-    private int quantity;
+/**
+ * A record representing an Item with code, name, and price.
+ * This record includes validation for the fields in its canonical constructor.
+ */
+public record Item(
+        String code,   // Code of the item, should be a two-digit number from 01 to 99.
+        String name,   // Name of the item, cannot be empty.
+        double price   // Price of the item, must be non-negative.
+) {
+    /**
+     * Canonical constructor with validation logic.
+     *
+     * @param code  The code of the item. Must be a two-digit number from 01 to 99.
+     * @param name  The name of the item. Cannot be empty.
+     * @param price The price of the item. Must be a non-negative value.
+     * @throws IllegalArgumentException if the code, name, or price are invalid.
+     */
+    public Item {
 
-    public Item(String code, String name, double price) {
-        validateCode(code);
-        this.code = code;
-        this.name = name;
-        this.price = price;
-        this.quantity = 0;
-    }
-
-    public String getCode() {
-        return this.code;
-    }
-
-    public String printItem() {
-        return this.code + "\t" + this.name + "\t￡" + String.format("%.2f", this.price) + "\t" + this.quantity;
-    }
-
-    public void changePrice(double newPrice) throws IllegalArgumentException {
-        if (newPrice < 0) {
-            throw new IllegalArgumentException("Price cannot be negative");
+        // Validate that the name is not empty.
+        if (code == null || code.isEmpty()) {
+            throw new IllegalArgumentException("Code cannot be empty");
         }
-        this.price = newPrice;
-    }
 
-    public void increaseQuantity(int quantity) throws OverflowingShelfException, IllegalArgumentException {
-        if (validateQuantity(quantity) && quantity + this.quantity > Constants.LIMIT_ITEM_QUANTITY_IN_VM) {
-            throw new OverflowingShelfException("This item, " + this.code + ", reached the limit of its' shelf.");
-        }
-        this.quantity += quantity;
-    }
+        // Regex pattern to match valid codes (from 01 to 99).
+        String codeRegex = "0[1-9]|[1-9][0-9]";
+        Pattern codePattern = Pattern.compile(codeRegex);
+        Matcher codeMatcher = codePattern.matcher(code);
 
-    public void decreaseQuantity(int quantity) throws NotEnoughException, IllegalArgumentException {
-        if (validateQuantity(quantity) && quantity > this.quantity) {
-            throw new NotEnoughException("This item, " + this.code + ", have not enough stock as you requested.");
+        // Validate the code to ensure it matches the pattern.
+        if (!codeMatcher.matches()) {
+            throw new IllegalArgumentException("Invalid code: Must be a two-digit number between 01 and 99");
         }
-        this.quantity -= quantity;
+
+        // Validate that the name is not empty.
+        if (name == null || name.isEmpty()) {
+            throw new IllegalArgumentException("Invalid name: Name cannot be empty");
+        }
+
+        // Validate that the price is non-negative.
+        if (price < 0){
+            throw new IllegalArgumentException("Invalid price: Price must be non-negative");
+        }
     }
 }
