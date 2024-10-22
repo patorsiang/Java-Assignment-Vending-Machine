@@ -85,8 +85,12 @@ public class VendingMachine implements AdminAction {
     }
 
     @Override
-    public void setState(VendingMachineState state) {
-        this.currentState = state;
+    public void breakToMaintenance() throws InvalidMachineStateException {
+        if (currentState == VendingMachineState.READY || currentState == VendingMachineState.IDLE) {
+            currentState = VendingMachineState.IDLE;
+        } else {
+            throw new InvalidMachineStateException("It's not ready to maintain because it is in the time that the customer is using");
+        }
     }
 
     public Map<Item, Integer> getShelf() {

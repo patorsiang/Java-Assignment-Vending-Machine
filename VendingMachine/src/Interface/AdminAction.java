@@ -1,7 +1,6 @@
 package Interface;
 
 import Constants.Coin;
-import Constants.VendingMachineState;
 import Exceptions.InvalidMachineStateException;
 import Exceptions.LimitExceededException;
 import Objects.Item;
@@ -24,6 +23,6 @@ public interface AdminAction {
     // vending machine state has to be IDLE
     void addItem(Item item, int amount) throws LimitExceededException, InvalidMachineStateException;
 
-    // Set state of machine
-    void setState(VendingMachineState state);
+    // Set state of machine to idle
+    void breakToMaintenance() throws InvalidMachineStateException;
 }

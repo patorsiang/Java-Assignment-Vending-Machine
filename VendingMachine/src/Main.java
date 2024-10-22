@@ -60,5 +60,13 @@ public class Main {
 
         // Admin: check shelves
         printShelf(vm);
+
+        // End of the day
+        // Admin: set State of the machine
+        try {
+            vm.breakToMaintenance();
+        } catch (Exception e) {
+            printException(e);
+        }
     }
 }
