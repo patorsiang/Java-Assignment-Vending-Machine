@@ -3,11 +3,12 @@ package Objects;
 import Constants.*;
 import Exceptions.*;
 import Interface.*;
+
 import java.util.*;
 
 import static Services.VendingMachinePrintService.*;
 
-public class VendingMachine implements AdminAction {
+public class VendingMachine implements AdminAction, CustomerAction {
     // maxCapacity: configurable in terms of the maximum number of items that it can hold
     // if it has been set up, these limits should not change
     private final int maxCapacity;
@@ -22,6 +23,7 @@ public class VendingMachine implements AdminAction {
     private double currentBalance;
     private double userBalance;
     private String selectedCode;
+    private double currentPrice;
 
     private VendingMachineState currentState;  // Track the current state of the machine
 
@@ -61,7 +63,7 @@ public class VendingMachine implements AdminAction {
     }
 
     @Override
-    public void withdrawCoins() throws InvalidMachineStateException{
+    public void withdrawCoins() throws InvalidMachineStateException {
         if (currentState == VendingMachineState.IDLE) {
             machineBalance = 0.0;
             spareChangeCoins.clear();
@@ -93,6 +95,70 @@ public class VendingMachine implements AdminAction {
         }
     }
 
+    @Override
+    public void insertCoin(Coin coin) {
+        currentState = VendingMachineState.COIN_INSERTED;
+        userBalance += coin.getValue();
+        currentBalance += coin.getValue();
+        insertedCoins.put(coin, insertedCoins.getOrDefault(coin, 0) + 1);
+        printAction("Customer inserted a " + coin + " coin.");
+        printInfo();
+    }
+
+    @Override
+    public double getCurrentBalance() {
+        return 0;
+    }
+
+    @Override
+    public void selectItem(String code) throws ItemNotFoundException {
+        printAction("Customer selected " + code);
+        var itemFound = false;
+        for (Item item : shelf.keySet()) {
+            if (item.code().equals(code)) {
+                itemFound = true;
+                if (selectedCode == null || selectedCode.isEmpty()) {
+                    currentBalance += currentPrice - item.price();
+                } else {
+                    currentBalance -= item.price();
+                }
+                selectedCode = code;
+                currentPrice = item.price();
+                currentState = VendingMachineState.ITEM_SELECTED;
+                break;
+            }
+        }
+        printInfo();
+        if (!itemFound) {
+            throw new ItemNotFoundException("Item not found");
+        }
+    }
+
+    @Override
+    public String getItemCode() {
+        return "";
+    }
+
+    @Override
+    public void requestRefund() {
+
+    }
+
+    @Override
+    public void requestPurchaseItem() throws InsufficientHoldedCoinsException {
+
+    }
+
+    @Override
+    public void requestChange() throws InsufficientSpareChangeCoinsException {
+
+    }
+
+    @Override
+    public void collect() {
+
+    }
+
     public Map<Item, Integer> getShelf() {
         return shelf;
     }
@@ -107,5 +173,13 @@ public class VendingMachine implements AdminAction {
 
     public VendingMachineState getCurrentState() {
         return currentState;
+    }
+
+    public void printInfo() {
+        System.out.println("--------------------------------------");
+        System.out.println("User Balance: " + userBalance);
+        System.out.println("Current Balance: " + currentBalance);
+        System.out.println("Selected Code: " + selectedCode);
+        System.out.println("--------------------------------------");
     }
 }

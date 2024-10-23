@@ -5,22 +5,20 @@ import Exceptions.InsufficientSpareChangeCoinsException;
 import Exceptions.InsufficientHoldedCoinsException;
 import Exceptions.ItemNotFoundException;
 
-import java.util.Map;
-
 /**
  * It's represent customer interacting with the vending machine
  */
 public interface CustomerAction {
     // "Users may deposit coins into the machine." -> Customer inserts a coin
     // User has to select item first
-    Map<Coin, Integer> insertCoin(Coin coin);
+    void insertCoin(Coin coin);
 
     // Returns current balance of inserted coins
     double getCurrentBalance();
 
     // Customer selects item
     // throws exception if not found
-    void selectItem(String coe) throws ItemNotFoundException;
+    void selectItem(String code) throws ItemNotFoundException;
 
     // Returns currently selected item’s code
     String getItemCode();

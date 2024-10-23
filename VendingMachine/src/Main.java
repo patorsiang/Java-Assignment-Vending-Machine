@@ -1,4 +1,5 @@
 import Constants.Coin;
+import Exceptions.ItemNotFoundException;
 import Objects.*;
 
 import static Constants.Constants.*;
@@ -60,6 +61,23 @@ public class Main {
 
         // Admin: check shelves
         printShelf(vm);
+
+        // Case I: insert Coin before select code
+        // Customer:
+        vm.insertCoin(Coin.ONE_POUND);
+
+        // Customer: Select item
+        try {
+            // Step 1: select code that first time and valid
+            vm.selectItem("01");
+            // Step 2: change code
+            vm.selectItem("02");
+            // Step 3: select invalid code
+            vm.selectItem("05");
+        } catch (Exception e) {
+            printException(e);
+        }
+        // Case II: select code before insert Coin
 
         // End of the day
         // Admin: set State of the machine
