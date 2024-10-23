@@ -13,15 +13,9 @@ public interface CustomerAction {
     // User has to select item first
     void insertCoin(Coin coin);
 
-    // Returns current balance of inserted coins
-    double getCurrentBalance();
-
     // Customer selects item
     // throws exception if not found
     void selectItem(String code) throws ItemNotFoundException;
-
-    // Returns currently selected item’s code
-    String getItemCode();
 
     // Customer may cancel their purchase and withdraw the money they have deposited.
     // Customer requests a refund, coins to be placed in return bucket
