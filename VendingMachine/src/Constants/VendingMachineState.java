@@ -1,8 +1,5 @@
 package Constants;
 
-/**
- *
- */
 public enum VendingMachineState {
     IDLE, // Idle: initial
     READY, // when admin set up the system including item, SparedChange

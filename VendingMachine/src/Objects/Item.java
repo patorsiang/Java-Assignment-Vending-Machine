@@ -1,5 +1,6 @@
 package Objects;
 
+import java.math.BigDecimal;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -10,7 +11,7 @@ import java.util.regex.Pattern;
 public record Item(
         String code,   // Code of the item, should be a two-digit number from 01 to 99.
         String name,   // Name of the item, cannot be empty.
-        double price   // Price of the item, must be non-negative.
+        BigDecimal price   // Price of the item, must be non-negative.
 ) {
     /**
      * Canonical constructor with validation logic.
@@ -43,7 +44,7 @@ public record Item(
         }
 
         // Validate that the price is non-negative.
-        if (price < 0){
+        if (price.compareTo(BigDecimal.ZERO) < 0) {
             throw new IllegalArgumentException("Invalid price: Price must be non-negative");
         }
     }
