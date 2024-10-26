@@ -1,4 +1,4 @@
-package Interface;
+package Interfaces;
 
 import Constants.Coin;
 import Exceptions.*;
@@ -31,7 +31,4 @@ public interface CustomerAction {
     // Customer collects refund, or item and change, from return bucket
     // Update states of the vending machine and return bucket
     void collect() throws InvalidMachineStateException;
-
-    // Start the system
-    void startOrReset() throws InvalidMachineStateException;
 }

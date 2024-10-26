@@ -1,16 +1,17 @@
 package Objects;
 
+import Exceptions.*;
+import Interfaces.AdminAction;
+import Interfaces.CustomerAction;
 import Constants.Coin;
 import Constants.VendingMachineState;
-import Exceptions.*;
-import Interface.AdminAction;
-import Interface.CustomerAction;
 import org.jetbrains.annotations.NotNull;
 
 import java.math.BigDecimal;
 import java.util.*;
 
 public class VendingMachine implements AdminAction, CustomerAction {
+    private boolean isAdmin;
     private final int maxCapacity;
     private int remainingCapacity;
     private VendingMachineState state;
@@ -25,11 +26,13 @@ public class VendingMachine implements AdminAction, CustomerAction {
     private Item returnItem;
 
     public VendingMachine(int maxCapacity) {
-        System.out.println(">>> Admin setting Vending Machine with max " + maxCapacity + " items capacity");
+        System.out.println("Initializing: Vending Machine with max " + maxCapacity + " items capacity");
+
         if (maxCapacity < 0) {
             throw new IllegalArgumentException("Max capacity must be a positive number");
         }
 
+        this.isAdmin = false;
         this.maxCapacity = maxCapacity;
         this.remainingCapacity = maxCapacity;
         this.state = VendingMachineState.IDLE;
@@ -44,83 +47,13 @@ public class VendingMachine implements AdminAction, CustomerAction {
         this.returnItem = null;
     }
 
-    private void printState() {
-        System.out.println("-----------------------------------------");
-        System.out.println("Vending Machine State");
-        System.out.println("State: " + state);
-        System.out.println("Capacity: " + maxCapacity);
-        System.out.println("Remaining Capacity: " + remainingCapacity);
-        System.out.println("Shelf: ");
-        printShelf();
-        printBalance("Machine", machineBalance, spareCoins);
-    }
-
-    private void printShelf() {
-        System.out.println("--------------------------------------");
-        System.out.printf("| %-4s | %-10s | %-5s | %-6s |%n", "Code", "Name", "Price", "Amount");
-        System.out.println("--------------------------------------");
-        var items = shelf.keySet().stream().sorted(Comparator.comparing(Item::code)).toList();
-        for (var item : items) {
-            var itemAmount = shelf.get(item);
-            System.out.printf("| %-4s | %-10s | %5.2f | %-6d |%n", item.code(), item.name(), item.price(), itemAmount);
-        }
-        System.out.println("--------------------------------------");
-    }
-
-    private void printBalance(String label, BigDecimal balance, Map<Coin, Integer> coins) {
-        System.out.printf("%s Balance: %.2f%n", label, balance);
-        if (!coins.isEmpty()) {
-            System.out.println("----------------------------");
-            System.out.printf("| %-15s | %-6s |%n", "Coin", "Amount");
-            System.out.println("----------------------------");
-            for (var entry : coins.entrySet()) {
-                System.out.printf("| %-15s | %-6d |%n", entry.getKey(), entry.getValue());
-            }
-            System.out.println("----------------------------");
-        }
-    }
-
-    @Override
-    public void startOrReset() throws InvalidMachineStateException {
-        if (!List.of(VendingMachineState.IDLE, VendingMachineState.READY, VendingMachineState.PURCHASED_COMPLETED).contains(state) && currentBalance.compareTo(BigDecimal.ZERO) > 0) {
-            throw new InvalidMachineStateException("Can't start or reset now");
-        }
-
-        if (state == VendingMachineState.IDLE) {
-            System.out.println(">>> Admin Starting the system");
-        }
-
-        state = VendingMachineState.READY;
-        customerBalance = BigDecimal.ZERO;
-        currentBalance = BigDecimal.ZERO;
-        customerCoins.clear();
-        returnCoins.clear();
-        selectedItem = null;
-        returnItem = null;
-
-        System.out.println("-----------------------------------------");
-        System.out.println("Welcome to the Vending Machine System");
-        printCurrentState();
-        printShelf();
-    }
-
-    private void printCurrentState() {
-        System.out.println("-----------------------------------------");
-        System.out.println("State: " + state);
-        if (selectedItem != null) {
-            System.out.println("Selected item: " + selectedItem);
-        }
-
-        if (returnCoins.isEmpty()) {
-            System.out.printf("Current balance: %.2f%n", currentBalance);
-            printBalance("Customer", currentBalance, customerCoins);
-        }
-
-    }
-
     @Override
     public void addCoins(Coin coin, int amount) {
+        if (!isAdmin) {
+            throw new SecurityException("Unauthorized access: Only admin can add coins.");
+        }
         System.out.println(">>> Admin Adding " + amount + " " + coin + " coin" + (amount > 1 ? "s" : ""));
+
         if (amount < 0) {
             throw new IllegalArgumentException("Amount must be a positive number");
         }
@@ -132,7 +65,11 @@ public class VendingMachine implements AdminAction, CustomerAction {
 
     @Override
     public void withdrawCoins() throws InvalidMachineStateException {
+        if (!isAdmin) {
+            throw new SecurityException("Unauthorized access: Only admin can withdraw coins.");
+        }
         System.out.println(">>> Admin Withdrawing Coins");
+
         if (state != VendingMachineState.IDLE) {
             throw new InvalidMachineStateException("This is not a time to withdraw Coins, State should be Idle");
         }
@@ -146,7 +83,11 @@ public class VendingMachine implements AdminAction, CustomerAction {
 
     @Override
     public void addItem(Item item, int amount) throws LimitExceededException, InvalidMachineStateException {
+        if (!isAdmin) {
+            throw new SecurityException("Unauthorized access: Only admin can add items.");
+        }
         System.out.println(">>> Admin Adding " + item + " to " + amount);
+
         if (amount < 0) {
             throw new IllegalArgumentException("Amount must be a positive number");
         } else if (amount > remainingCapacity) {
@@ -164,8 +105,21 @@ public class VendingMachine implements AdminAction, CustomerAction {
     }
 
     @Override
+    public void startOrReset() throws InvalidMachineStateException {
+        if (!isAdmin) {
+            throw new SecurityException("Unauthorized access: Only admin can add reset.");
+        }
+        resetProcess();
+    }
+
+    @Override
     public void breakToMaintenance() throws InvalidMachineStateException {
+        if (!isAdmin) {
+            throw new SecurityException("Unauthorized access: Only admin can break to maintenance.");
+        }
+
         System.out.println(">>> Admin Breaking out of maintenance");
+
         if (!List.of(VendingMachineState.READY, VendingMachineState.IDLE).contains(state)) {
             throw new InvalidMachineStateException("This is not a time to break out of maintenance");
         }
@@ -178,7 +132,7 @@ public class VendingMachine implements AdminAction, CustomerAction {
     public void insertCoin(@NotNull Coin coin) throws InvalidMachineStateException {
         System.out.println(">>> Customer inserting a " + coin + " coin");
         if (!List.of(VendingMachineState.READY, VendingMachineState.PURCHASING).contains(state)) {
-            throw new InvalidMachineStateException("This is not a time to insert Coins, State should be ready, coin inserted, or item selected");
+            throw new InvalidMachineStateException("The Vending Machine is unavailable. Try again Later.");
         }
         state = VendingMachineState.PURCHASING;
         customerBalance = customerBalance.add(coin.getValue());
@@ -191,7 +145,7 @@ public class VendingMachine implements AdminAction, CustomerAction {
     public void selectItem(String code) throws ItemNotFoundException, InvalidMachineStateException, OutOfShelfException {
         System.out.println(">>> Customer selecting item, " + code);
         if (!List.of(VendingMachineState.READY, VendingMachineState.PURCHASING).contains(state)) {
-            throw new InvalidMachineStateException("This is not a time to select item, State should be ready, coin inserted, or item selected");
+            throw new InvalidMachineStateException("The Vending Machine is unavailable. Try again Later.");
         }
 
         var selectedItem = getItemByCode(code);
@@ -212,10 +166,6 @@ public class VendingMachine implements AdminAction, CustomerAction {
         this.selectedItem = selectedItem;
         currentBalance = currentBalance.subtract(selectedItem.price());
         printCurrentState();
-    }
-
-    private Item getItemByCode(String code) {
-        return shelf.keySet().stream().filter(item -> item.code().equals(code)).findFirst().orElse(null);
     }
 
     @Override
@@ -319,10 +269,90 @@ public class VendingMachine implements AdminAction, CustomerAction {
         }
         state = VendingMachineState.PURCHASED_COMPLETED;
         System.out.println("Thank you for purchasing! See you later!");
-        startOrReset();
+        resetProcess();
     }
 
-    public void printError(Exception e) {
+    public void setUserRole (boolean isAdmin) {
+        this.isAdmin = isAdmin;
+    }
+
+    public void printError(@NotNull Exception e) {
         System.out.println("Error: " + e.getMessage());
+    }
+
+    private void printShelf() {
+        System.out.println("--------------------------------------");
+        System.out.printf("| %-4s | %-10s | %-5s | %-6s |%n", "Code", "Name", "Price", "Amount");
+        System.out.println("--------------------------------------");
+        var items = shelf.keySet().stream().sorted(Comparator.comparing(Item::code)).toList();
+        for (var item : items) {
+            var itemAmount = shelf.get(item);
+            System.out.printf("| %-4s | %-10s | %5.2f | %-6d |%n", item.code(), item.name(), item.price(), itemAmount);
+        }
+        System.out.println("--------------------------------------");
+    }
+
+    private void printBalance(String label, BigDecimal balance, Map<Coin, Integer> coins) {
+        System.out.printf("%s Balance: %.2f%n", label, balance);
+        if (!coins.isEmpty()) {
+            System.out.println("----------------------------");
+            System.out.printf("| %-15s | %-6s |%n", "Coin", "Amount");
+            System.out.println("----------------------------");
+            for (var entry : coins.entrySet()) {
+                System.out.printf("| %-15s | %-6d |%n", entry.getKey(), entry.getValue());
+            }
+            System.out.println("----------------------------");
+        }
+    }
+
+    private void resetProcess() throws InvalidMachineStateException {
+        if (!List.of(VendingMachineState.IDLE, VendingMachineState.READY, VendingMachineState.PURCHASED_COMPLETED).contains(state) && currentBalance.compareTo(BigDecimal.ZERO) > 0) {
+            throw new InvalidMachineStateException("Can't start or reset now");
+        }
+
+        if (state == VendingMachineState.IDLE) {
+            System.out.println(">>> Admin Starting the system");
+        }
+
+        state = VendingMachineState.READY;
+        customerBalance = BigDecimal.ZERO;
+        currentBalance = BigDecimal.ZERO;
+        customerCoins.clear();
+        returnCoins.clear();
+        selectedItem = null;
+        returnItem = null;
+
+        System.out.println("-----------------------------------------");
+        System.out.println("Welcome to the Vending Machine System");
+        printCurrentState();
+        printShelf();
+    }
+
+    private void printCurrentState() {
+        System.out.println("-----------------------------------------");
+        System.out.println("State: " + state);
+        if (selectedItem != null) {
+            System.out.println("Selected item: " + selectedItem);
+        }
+
+        if (returnCoins.isEmpty()) {
+            System.out.printf("Current balance: %.2f%n", currentBalance);
+            printBalance("Customer", currentBalance, customerCoins);
+        }
+    }
+
+    private Item getItemByCode(String code) {
+        return shelf.keySet().stream().filter(item -> item.code().equals(code)).findFirst().orElse(null);
+    }
+
+    private void printState() {
+        System.out.println("-----------------------------------------");
+        System.out.println("Vending Machine State");
+        System.out.println("State: " + state);
+        System.out.println("Capacity: " + maxCapacity);
+        System.out.println("Remaining Capacity: " + remainingCapacity);
+        System.out.println("Shelf: ");
+        printShelf();
+        printBalance("Machine", machineBalance, spareCoins);
     }
 }

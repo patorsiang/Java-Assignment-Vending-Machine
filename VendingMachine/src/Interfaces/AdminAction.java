@@ -1,4 +1,4 @@
-package Interface;
+package Interfaces;
 
 import Constants.Coin;
 import Exceptions.InvalidMachineStateException;
@@ -11,7 +11,7 @@ import Objects.Item;
 public interface AdminAction {
     // Add money to the machine
     // vending machine state has to be IDLE
-    void addCoins(Coin coin, int amount) throws InvalidMachineStateException;
+    void addCoins(Coin coin, int amount);
 
     // Take the money out of the machine
     // vending machine state has to be IDLE

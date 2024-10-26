@@ -1,98 +1,33 @@
 import Constants.Coin;
+import Exceptions.InvalidMachineStateException;
+import Exceptions.LimitExceededException;
+import Objects.Admin;
+import Objects.Customer;
+import Objects.Item;
 import Objects.VendingMachine;
+
+import java.math.BigDecimal;
 
 import static Constants.Constants.*;
 
 public class Main {
-    public static void main(String[] args) {
-        // initiate vending machine
-        var vm = new VendingMachine(LIMIT_ITEM_QUANTITY_IN_VM);
+    public static void main(String[] args) throws LimitExceededException, InvalidMachineStateException {
+        // 1. Initialize the vending machine
+        VendingMachine vm = new VendingMachine(LIMIT_ITEM_QUANTITY_IN_VM);
 
-        // Admin: adding items from item stock
-        try {
-            for (var item : itemStock.entrySet()) {
-                vm.addItem(item.getKey(), item.getValue());
-            }
+        // 2. Create Admin and Customer objects with the vending machine instance
+        Admin admin = new Admin(vm);
+        Customer customer = new Customer(vm);
 
-            for (var item : addOnItemStock.entrySet()) {
-                vm.addItem(item.getKey(), item.getValue());
-            }
-        } catch (Exception e) {
-            vm.printError(e);
-        }
-
-        // Admin: starting the system
-        try {
-            vm.startOrReset();
-        } catch (Exception e) {
-            vm.printError(e);
-        }
-
-        // Customer: canceling
-        try {
-            vm.insertCoin(Coin.ONE_POUND);
-            vm.selectItem("02");
-            vm.requestRefund();
-            vm.collect();
-        } catch (Exception e) {
-            vm.printError(e);
-        }
-
-        // Customer: purchasing with enough coin
-        try {
-            vm.insertCoin(Coin.ONE_POUND);
-            vm.selectItem("02");
-            vm.requestPurchaseItem();
-            vm.collect();
-        } catch (Exception e) {
-            vm.printError(e);
-        }
-
-        // Customer: purchasing with over coins
-        try {
-            vm.insertCoin(Coin.TWO_POUNDS);
-            vm.selectItem("03");
-            vm.requestPurchaseItem();
-            vm.collect();
-        } catch (Exception e) {
-            vm.printError(e);
-        }
-        try {
-            vm.addCoins(Coin.FIFTY_PENCE, 1);
-            vm.requestChange();
-            vm.collect();
-        } catch (Exception e) {
-            vm.printError(e);
-        }
-//
-        // Admin: breaking to maintain
-        try {
-            vm.breakToMaintenance();
-        } catch (Exception e) {
-            vm.printError(e);
-        }
-
-        // Admin: withdrawing coin
-        try {
-            vm.withdrawCoins();
-        } catch (Exception e) {
-            vm.printError(e);
-        }
-
-        // Admin: adding coins from saving
-        try {
-            for (var coin : changeCoin.entrySet()) {
-                vm.addCoins(coin.getKey(), coin.getValue());
-            }
-        } catch (Exception e) {
-            vm.printError(e);
-        }
-
-        // Admin: starting system again
-        try {
-            vm.startOrReset();
-        } catch (Exception e) {
-            vm.printError(e);
-        }
+        // 3. Admin adds items to the vending machine
+        Item coke = new Item("01", "Coke", BigDecimal.valueOf(1.25));
+        admin.addItem(coke, 5);
+        admin.startOrReset();
+        customer.insertCoin(Coin.ONE_POUND);
+        customer.insertCoin(Coin.TWENTY_PENCE);
+        customer.requestRefund();
+        customer.collect();
+        admin.breakToMaintenance();
+        admin.addItem(coke, 5);
     }
 }
