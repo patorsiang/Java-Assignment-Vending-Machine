@@ -23,6 +23,9 @@ public interface AdminAction {
     // vending machine state has to be IDLE
     void addItem(Item item, int amount) throws LimitExceededException, InvalidMachineStateException;
 
+    // Start the system
+    void startOrReset() throws InvalidMachineStateException;
+
     // Set state of machine to idle
     void breakToMaintenance() throws InvalidMachineStateException;
 }

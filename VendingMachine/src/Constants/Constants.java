@@ -23,7 +23,10 @@ public class Constants {
     public static final Map<Item, Integer> itemStock = Map.of(
             new Item("01", "Coke", BigDecimal.valueOf(1.25)), 5,
             new Item("02", "Water", BigDecimal.valueOf(1)), 5,
-            new Item("03", "Milk", BigDecimal.valueOf(1.50)), 5,
+            new Item("03", "Milk", BigDecimal.valueOf(1.50)), 5
+    );
+
+    public static final Map<Item, Integer> addOnItemStock = Map.of(
             new Item("04", "Coffee", BigDecimal.valueOf(1.75)), 5
     );
 }
