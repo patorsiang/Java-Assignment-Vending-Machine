@@ -10,21 +10,12 @@ public class Main {
 
         // Admin: adding items from item stock
         try {
-            for (var item: itemStock.entrySet()) {
+            for (var item : itemStock.entrySet()) {
                 vm.addItem(item.getKey(), item.getValue());
             }
 
-            for (var item: addOnItemStock.entrySet()) {
+            for (var item : addOnItemStock.entrySet()) {
                 vm.addItem(item.getKey(), item.getValue());
-            }
-        } catch (Exception e) {
-           vm.printError(e);
-        }
-
-        // Admin: adding coins from saving
-        try {
-            for (var coin: changeCoin.entrySet()) {
-                vm.addCoins(coin.getKey(), coin.getValue());
             }
         } catch (Exception e) {
             vm.printError(e);
@@ -37,17 +28,43 @@ public class Main {
             vm.printError(e);
         }
 
-        // Customer: purchasing with enough coin
+        // Customer: canceling
         try {
             vm.insertCoin(Coin.ONE_POUND);
             vm.selectItem("02");
-            vm.requestPurchaseItem();
-            vm.requestChange();
+            vm.requestRefund();
             vm.collect();
         } catch (Exception e) {
             vm.printError(e);
         }
 
+        // Customer: purchasing with enough coin
+        try {
+            vm.insertCoin(Coin.ONE_POUND);
+            vm.selectItem("02");
+            vm.requestPurchaseItem();
+            vm.collect();
+        } catch (Exception e) {
+            vm.printError(e);
+        }
+
+        // Customer: purchasing with over coins
+        try {
+            vm.insertCoin(Coin.TWO_POUNDS);
+            vm.selectItem("03");
+            vm.requestPurchaseItem();
+            vm.collect();
+        } catch (Exception e) {
+            vm.printError(e);
+        }
+        try {
+            vm.addCoins(Coin.FIFTY_PENCE, 1);
+            vm.requestChange();
+            vm.collect();
+        } catch (Exception e) {
+            vm.printError(e);
+        }
+//
         // Admin: breaking to maintain
         try {
             vm.breakToMaintenance();
@@ -58,6 +75,22 @@ public class Main {
         // Admin: withdrawing coin
         try {
             vm.withdrawCoins();
+        } catch (Exception e) {
+            vm.printError(e);
+        }
+
+        // Admin: adding coins from saving
+        try {
+            for (var coin : changeCoin.entrySet()) {
+                vm.addCoins(coin.getKey(), coin.getValue());
+            }
+        } catch (Exception e) {
+            vm.printError(e);
+        }
+
+        // Admin: starting system again
+        try {
+            vm.startOrReset();
         } catch (Exception e) {
             vm.printError(e);
         }

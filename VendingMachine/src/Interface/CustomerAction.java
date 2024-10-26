@@ -17,13 +17,13 @@ public interface CustomerAction {
 
     // Customer may cancel their purchase and withdraw the money they have deposited.
     // Customer requests a refund, coins to be placed in return bucket
-    void requestRefund();
+    void requestRefund() throws PurchasedException, RefundedException;
 
     // Customer requests purchasing selected item
     // "Once enough money has been deposited, users may withdraw an item of their choice."
     // This has to check that userBalance with item that customer selected, enough or not
     // throws exception on error, puts item in return bucket
-    void requestPurchaseItem() throws PurchasedException;
+    void requestPurchaseItem() throws PurchasedException, InsufficientSpareChangeCoinsException;
 
     // Customer requests change, coins to be placed in return bucket
     void requestChange() throws InsufficientSpareChangeCoinsException;
