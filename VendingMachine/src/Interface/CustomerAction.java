@@ -17,7 +17,7 @@ public interface CustomerAction {
 
     // Customer may cancel their purchase and withdraw the money they have deposited.
     // Customer requests a refund, coins to be placed in return bucket
-    void requestRefund() throws PurchasedException, RefundedException;
+    void requestRefund() throws RefundedException;
 
     // Customer requests purchasing selected item
     // "Once enough money has been deposited, users may withdraw an item of their choice."

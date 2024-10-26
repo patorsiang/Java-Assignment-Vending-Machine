@@ -13,7 +13,7 @@ import java.util.*;
 public class VendingMachine implements AdminAction, CustomerAction {
     private final int maxCapacity;
     private int remainingCapacity;
-    private final List<VendingMachineState> state;
+    private VendingMachineState state;
     private final Map<Item, Integer> shelf;
     private final Map<Coin, Integer> spareCoins;
     private final Map<Coin, Integer> customerCoins;
@@ -32,7 +32,7 @@ public class VendingMachine implements AdminAction, CustomerAction {
 
         this.maxCapacity = maxCapacity;
         this.remainingCapacity = maxCapacity;
-        this.state = new ArrayList<>(List.of(VendingMachineState.IDLE));
+        this.state = VendingMachineState.IDLE;
         this.shelf = new HashMap<>();
         this.spareCoins = new EnumMap<>(Coin.class);
         this.customerCoins = new EnumMap<>(Coin.class);
@@ -44,14 +44,10 @@ public class VendingMachine implements AdminAction, CustomerAction {
         this.returnItem = null;
     }
 
-    private VendingMachineState getState() {
-        return state.getLast();
-    }
-
     private void printState() {
         System.out.println("-----------------------------------------");
         System.out.println("Vending Machine State");
-        System.out.println("State: " + getState());
+        System.out.println("State: " + state);
         System.out.println("Capacity: " + maxCapacity);
         System.out.println("Remaining Capacity: " + remainingCapacity);
         System.out.println("Shelf: ");
@@ -86,15 +82,15 @@ public class VendingMachine implements AdminAction, CustomerAction {
 
     @Override
     public void startOrReset() throws InvalidMachineStateException {
-        if (getState() != VendingMachineState.IDLE && getState() != VendingMachineState.READY && getState() != VendingMachineState.PURCHASED_COMPLETED && currentBalance.compareTo(BigDecimal.ZERO) > 0) {
+        if (!List.of(VendingMachineState.IDLE, VendingMachineState.READY, VendingMachineState.PURCHASED_COMPLETED).contains(state) && currentBalance.compareTo(BigDecimal.ZERO) > 0) {
             throw new InvalidMachineStateException("Can't start or reset now");
         }
 
-        if (getState() != VendingMachineState.PURCHASED_COMPLETED) {
+        if (state == VendingMachineState.IDLE) {
             System.out.println(">>> Admin Starting the system");
         }
 
-        state.add(VendingMachineState.READY);
+        state = VendingMachineState.READY;
         customerBalance = BigDecimal.ZERO;
         currentBalance = BigDecimal.ZERO;
         customerCoins.clear();
@@ -110,7 +106,7 @@ public class VendingMachine implements AdminAction, CustomerAction {
 
     private void printCurrentState() {
         System.out.println("-----------------------------------------");
-        System.out.println("State: " + getState());
+        System.out.println("State: " + state);
         if (selectedItem != null) {
             System.out.println("Selected item: " + selectedItem);
         }
@@ -137,7 +133,7 @@ public class VendingMachine implements AdminAction, CustomerAction {
     @Override
     public void withdrawCoins() throws InvalidMachineStateException {
         System.out.println(">>> Admin Withdrawing Coins");
-        if (getState() != VendingMachineState.IDLE) {
+        if (state != VendingMachineState.IDLE) {
             throw new InvalidMachineStateException("This is not a time to withdraw Coins, State should be Idle");
         }
 
@@ -157,7 +153,7 @@ public class VendingMachine implements AdminAction, CustomerAction {
             throw new LimitExceededException("Maximum capacity exceeded");
         }
 
-        if (getState() != VendingMachineState.IDLE) {
+        if (state != VendingMachineState.IDLE) {
             throw new InvalidMachineStateException("This is not a time to add Items, State should be Idle");
         }
 
@@ -170,22 +166,21 @@ public class VendingMachine implements AdminAction, CustomerAction {
     @Override
     public void breakToMaintenance() throws InvalidMachineStateException {
         System.out.println(">>> Admin Breaking out of maintenance");
-        if (getState() != VendingMachineState.READY && getState() != VendingMachineState.IDLE) {
+        if (!List.of(VendingMachineState.READY, VendingMachineState.IDLE).contains(state)) {
             throw new InvalidMachineStateException("This is not a time to break out of maintenance");
         }
 
-        state.clear();
-        state.add(VendingMachineState.IDLE);
+        state = VendingMachineState.IDLE;
         printState();
     }
 
     @Override
     public void insertCoin(@NotNull Coin coin) throws InvalidMachineStateException {
         System.out.println(">>> Customer inserting a " + coin + " coin");
-        if (getState() != VendingMachineState.READY && getState() != VendingMachineState.COIN_INSERTED && getState() != VendingMachineState.ITEM_SELECTED) {
+        if (!List.of(VendingMachineState.READY, VendingMachineState.PURCHASING).contains(state)) {
             throw new InvalidMachineStateException("This is not a time to insert Coins, State should be ready, coin inserted, or item selected");
         }
-        state.add(VendingMachineState.COIN_INSERTED);
+        state = VendingMachineState.PURCHASING;
         customerBalance = customerBalance.add(coin.getValue());
         currentBalance = currentBalance.add(coin.getValue());
         customerCoins.put(coin, customerCoins.getOrDefault(coin, 0) + 1);
@@ -195,7 +190,7 @@ public class VendingMachine implements AdminAction, CustomerAction {
     @Override
     public void selectItem(String code) throws ItemNotFoundException, InvalidMachineStateException, OutOfShelfException {
         System.out.println(">>> Customer selecting item, " + code);
-        if (getState() != VendingMachineState.READY && getState() != VendingMachineState.COIN_INSERTED && getState() != VendingMachineState.ITEM_SELECTED) {
+        if (!List.of(VendingMachineState.READY, VendingMachineState.PURCHASING).contains(state)) {
             throw new InvalidMachineStateException("This is not a time to select item, State should be ready, coin inserted, or item selected");
         }
 
@@ -213,8 +208,8 @@ public class VendingMachine implements AdminAction, CustomerAction {
             currentBalance = currentBalance.add(this.selectedItem.price());
         }
 
+        state = VendingMachineState.PURCHASING;
         this.selectedItem = selectedItem;
-        state.add(VendingMachineState.ITEM_SELECTED);
         currentBalance = currentBalance.subtract(selectedItem.price());
         printCurrentState();
     }
@@ -227,13 +222,13 @@ public class VendingMachine implements AdminAction, CustomerAction {
     public void requestRefund() throws RefundedException {
         System.out.println(">>> Customer requesting refund");
 
-        if (getState() != VendingMachineState.COIN_INSERTED && getState() != VendingMachineState.ITEM_SELECTED) {
+        if (state != VendingMachineState.PURCHASING) {
             throw new RefundedException("Can't request refund at this state");
         }
 
         returnCoins.putAll(customerCoins);
         customerCoins.clear();
-        state.add(VendingMachineState.CANCELED);
+        state = VendingMachineState.CANCELED;
         printCurrentState();
 
         if (!returnCoins.isEmpty()) {
@@ -256,12 +251,13 @@ public class VendingMachine implements AdminAction, CustomerAction {
         }
 
         // Case: Success
-        state.add(VendingMachineState.PURCHASED);
+        state = VendingMachineState.PURCHASED;
 
         returnItem = selectedItem;
         selectedItem = null;
 
         shelf.put(returnItem, shelf.get(returnItem) - 1);
+        remainingCapacity += 1;
 
         for (var coin : customerCoins.keySet()) {
             spareCoins.put(coin, spareCoins.getOrDefault(coin, 0) + customerCoins.get(coin));
@@ -283,7 +279,7 @@ public class VendingMachine implements AdminAction, CustomerAction {
     @Override
     public void requestChange() throws InsufficientSpareChangeCoinsException {
         System.out.println(">>> Customer requesting changes");
-        if (getState() != VendingMachineState.PURCHASED) {
+        if (state != VendingMachineState.PURCHASED) {
             throw new InsufficientSpareChangeCoinsException("Can't request change yet");
         }
 
@@ -316,12 +312,13 @@ public class VendingMachine implements AdminAction, CustomerAction {
 
     @Override
     public void collect() throws InvalidMachineStateException {
-        if (getState() == VendingMachineState.CANCELED) {
+        if (state == VendingMachineState.CANCELED) {
             System.out.println(">>> Customer collecting refunded coin");
-        } else if (getState() == VendingMachineState.PURCHASED) {
+        } else if (state == VendingMachineState.PURCHASED) {
             System.out.println(">>> Customer collecting items and change coin");
         }
-        state.add(VendingMachineState.PURCHASED_COMPLETED);
+        state = VendingMachineState.PURCHASED_COMPLETED;
+        System.out.println("Thank you for purchasing! See you later!");
         startOrReset();
     }
 
