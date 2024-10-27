@@ -209,8 +209,7 @@ public class VendingMachine extends VendingMachineService implements AdminAction
         } else {
             var returnBalance = currentBalance;
             for (var coin : spareCoins.keySet()) {
-                var amountCoin = currentBalance.divide(coin.getValue(), 0, RoundingMode.DOWN).intValue();
-                System.out.println(amountCoin);
+                var amountCoin = currentBalance.divide(coin.getValue(), RoundingMode.FLOOR).intValue();
                 var amountOfCoin = spareCoins.getOrDefault(coin, 0);
                 if (amountCoin != 0 && amountOfCoin != 0) {
                     var amount = amountOfCoin < amountCoin ? amountOfCoin : amountCoin;
@@ -234,6 +233,12 @@ public class VendingMachine extends VendingMachineService implements AdminAction
 
     @Override
     public void collect() throws InvalidMachineStateException {
+        if (!List.of(VendingMachineState.PURCHASED, VendingMachineState.CANCELED).contains(state)) {
+            throw new InvalidMachineStateException("The process is not finished yet. There are nothing in the return bucket.");
+        } else if (state == VendingMachineState.PURCHASED && currentBalance.compareTo(BigDecimal.ZERO) > 0) {
+            throw new InvalidMachineStateException("The process is not finished yet. Please Contact Admin");
+        }
+
         if (state == VendingMachineState.CANCELED) {
             System.out.println(">>> Customer collecting refunded coin");
         } else if (state == VendingMachineState.PURCHASED) {

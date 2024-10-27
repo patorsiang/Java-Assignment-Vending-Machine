@@ -110,7 +110,7 @@ public abstract class VendingMachineService {
     protected void printCurrentState() {
         System.out.println("-----------------------------------------");
         System.out.println("State: " + state);
-        if (selectedItem != null) {
+        if (selectedItem != null || !state.equals(VendingMachineState.PURCHASED)) {
             System.out.println("Selected item: " + selectedItem);
         }
 
