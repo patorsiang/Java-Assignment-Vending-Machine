@@ -9,13 +9,14 @@ import org.jetbrains.annotations.NotNull;
 import java.math.BigDecimal;
 import java.util.*;
 
-public abstract class VendingMachineService {
+public class VendingMachineService {
 
     protected boolean isAdmin;
     protected final int maxCapacity;
     protected int remainingCapacity;
     protected VendingMachineState state;
     protected final Map<Item, Integer> shelf;
+    protected final Map<String, Item> codeToItemMap;
     protected final Map<Coin, Integer> spareCoins;
     protected final Map<Coin, Integer> customerCoins;
     protected final Map<Coin, Integer> returnCoins;
@@ -37,6 +38,7 @@ public abstract class VendingMachineService {
         this.remainingCapacity = maxCapacity;
         this.state = VendingMachineState.IDLE;
         this.shelf = new HashMap<>();
+        this.codeToItemMap = new HashMap<>();
         this.spareCoins = new EnumMap<>(Coin.class);
         this.customerCoins = new EnumMap<>(Coin.class);
         this.returnCoins = new EnumMap<>(Coin.class);
@@ -89,10 +91,6 @@ public abstract class VendingMachineService {
             throw new InvalidMachineStateException("Can't start or reset now");
         }
 
-        if (state == VendingMachineState.IDLE) {
-            System.out.println(">>> Admin Starting the system");
-        }
-
         state = VendingMachineState.READY;
         customerBalance = BigDecimal.ZERO;
         currentBalance = BigDecimal.ZERO;
@@ -120,10 +118,6 @@ public abstract class VendingMachineService {
         }
     }
 
-    protected Item getItemByCode(String code) {
-        return shelf.keySet().stream().filter(item -> item.code().equals(code)).findFirst().orElse(null);
-    }
-
     protected void printState() {
         System.out.println("-----------------------------------------");
         System.out.println("Vending Machine State");
@@ -134,4 +128,21 @@ public abstract class VendingMachineService {
         printShelf();
         printBalance("Machine", machineBalance, spareCoins);
     }
+
+    protected void checkPermission (String key) {
+        // check permission; user should be admin, if not
+        if (!isAdmin) {
+            // throw SecurityException
+            throw new SecurityException("Unauthorized access: Only admin can " + key);
+        }
+    }
+
+    protected void checkState(String warningMsg, VendingMachineState... shouldBeStates) throws InvalidMachineStateException {
+        // check state should be in shouldBeStates if not return error
+        if (!List.of(shouldBeStates).contains(state)) {
+            // throw InvalidMachineStateException
+            throw new InvalidMachineStateException(warningMsg);
+        }
+    }
+
 }

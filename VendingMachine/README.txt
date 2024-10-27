@@ -19,7 +19,7 @@ Represents a customer interacting with the vending machine; the customer can ins
 Represents an item in the vending machine, assigning each item a unique code, name, and price.
 7. Coin
 Represents different denominations of coins the vending machine accepts, each with a predefined value in pounds or pence.
-8. Exceptions (e.g., RefundedException, InsufficientSpareChangeCoinsException)
+8. Exceptions (e.g., InvalidMachineStateException, InsufficientSpareChangeCoinsException)
 Custom exceptions to handle errors like insufficient change, out-of-stock items, and invalid machine states.
 9. Constants
 It contains static values used for mock demonstrations.

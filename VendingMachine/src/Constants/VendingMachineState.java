@@ -1,5 +1,8 @@
 package Constants;
 
+/**
+ * Defines different states of the vending machine, helping manage transitions in the machine’s lifecycle.
+ */
 public enum VendingMachineState {
     IDLE, // Idle: initial
     READY, // when admin set up the system including item

@@ -6,7 +6,7 @@ import Exceptions.LimitExceededException;
 import Objects.Item;
 
 /**
- * It's represent owner interacting with the vending machine
+ * It represents the owner managing the vending machine
  */
 public interface AdminAction {
     // Add money to the machine
@@ -17,7 +17,7 @@ public interface AdminAction {
     // vending machine state has to be IDLE
     void withdrawCoins() throws InvalidMachineStateException;
 
-    // Add an item in the machine
+    // Add an item to the machine
     // Attempting to add contents
     // to the machine exceeding the limits should signal an error.
     // vending machine state has to be IDLE
@@ -26,6 +26,6 @@ public interface AdminAction {
     // Start the system
     void startOrReset() throws InvalidMachineStateException;
 
-    // Set state of machine to idle
+    // Set the state of the machine to idle
     void breakToMaintenance() throws InvalidMachineStateException;
 }
