@@ -12,50 +12,50 @@ public class Admin extends User implements AdminAction {
     @Override
     public void addCoins(Coin coin, int amount) {
         try {
-            vm.setUserRole(true);
+            vm.setAdminRole();
             vm.addCoins(coin,amount);
         } catch (Exception e) {
-            vm.printError(e);
+            printService.printError(e);
         }
     }
 
     @Override
     public void withdrawCoins() {
         try {
-            vm.setUserRole(true);
+            vm.setAdminRole();
             vm.withdrawCoins();
         } catch (Exception e) {
-            vm.printError(e);
+            printService.printError(e);
         }
     }
 
     @Override
     public void addItem(Item item, int amount) {
         try {
-            vm.setUserRole(true);
+            vm.setAdminRole();
             vm.addItem(item, amount);
         } catch (Exception e) {
-            vm.printError(e);
+            printService.printError(e);
         }
     }
 
     @Override
     public void startOrReset()  {
         try {
-            vm.setUserRole(true);
+            vm.setAdminRole();
             vm.startOrReset();
         } catch (Exception e) {
-            vm.printError(e);
+            printService.printError(e);
         }
     }
 
     @Override
     public void breakToMaintenance() {
         try {
-            vm.setUserRole(true);
+            vm.setAdminRole();
             vm.breakToMaintenance();
         } catch (Exception e) {
-            vm.printError(e);
+            printService.printError(e);
         }
     }
 }

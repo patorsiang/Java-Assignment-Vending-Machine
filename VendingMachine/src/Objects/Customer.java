@@ -12,60 +12,60 @@ public class Customer extends User implements CustomerAction {
     @Override
     public void insertCoin(Coin coin) {
         try {
-            vm.setUserRole(false);
+            vm.setCustomerRole();
             vm.insertCoin(coin);
         } catch (Exception e) {
-            vm.printError(e);
+           printService.printError(e);
         }
     }
 
     @Override
     public void selectItem(String code) {
         try {
-            vm.setUserRole(false);
+            vm.setCustomerRole();
             vm.selectItem(code);
         } catch (Exception e) {
-            vm.printError(e);
+           printService.printError(e);
         }
     }
 
     @Override
     public void requestRefund() {
         try {
-            vm.setUserRole(false);
+            vm.setCustomerRole();
             vm.requestRefund();
         } catch (Exception e) {
-            vm.printError(e);
+           printService.printError(e);
         }
     }
 
     @Override
     public void requestPurchaseItem() {
         try {
-            vm.setUserRole(false);
+            vm.setCustomerRole();
             vm.requestPurchaseItem();
         } catch (Exception e) {
-            vm.printError(e);
+           printService.printError(e);
         }
     }
 
     @Override
     public void requestChange() {
         try {
-            vm.setUserRole(false);
+            vm.setCustomerRole();
             vm.requestChange();
         } catch (Exception e) {
-            vm.printError(e);
+           printService.printError(e);
         }
     }
 
     @Override
     public void collect() {
         try {
-            vm.setUserRole(false);
+            vm.setCustomerRole();
             vm.collect();
         } catch (Exception e) {
-            vm.printError(e);
+           printService.printError(e);
         }
     }
 }
