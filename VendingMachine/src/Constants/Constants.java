@@ -25,11 +25,15 @@ public class Constants {
             Coin.TWO_POUNDS, 10
     );
 
+    // Items
+    public static final Item coke = new Item("01", "Coke", BigDecimal.valueOf(1.25));
+    public static final Item milk = new Item("02", "Milk", BigDecimal.valueOf(1.50));
+
     // The 1st stock that the owner or admin prepared to sell in the vending machine
     public static final Map<Item, Integer> itemStock = Map.of(
-            new Item("01", "Coke", BigDecimal.valueOf(1.25)), 5,
+            coke, 5,
             new Item("02", "Water", BigDecimal.valueOf(1)), 5,
-            new Item("03", "Milk", BigDecimal.valueOf(1.50)), 5
+            milk, 5
     );
 
     // The 2nd stock
