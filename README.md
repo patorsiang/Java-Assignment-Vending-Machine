@@ -248,3 +248,134 @@ VendingMachine --> OutOfLimitOfContentsException : validates
 - download
 - unzip
 - run
+
+## Plan to test
+
+### Test Case
+
+- [x] initialize Vending Machine (1)
+- [x] initialize Admin (2)
+- [x] initialize Customer (3)
+- For Admin
+  - add new items
+    - case:
+      - [ ] successful (4)
+      - failed
+        - [ ] permission denied (5)
+        - [ ] negative amount (6)
+    - update variables:
+      - spare coins
+      - machine balance
+  - withdraw coins
+    - case:
+      - [ ] successful (7)
+      - failed
+        - [ ] permission denied (8)
+        - [ ] inappropriate state (9)
+    - update variables:
+      - machine balance should be 0
+      - spare coins should be empty
+  - add new items
+    - case:
+      - [ ] successful (10)
+      - failed
+        - [ ] permission denied (11)
+        - [ ] duplicate item code (12)
+        - [ ] negative amount (13)
+        - [ ] over the limit of the vending machine capacity (14)
+    - update variables:
+      - remainingCapacity
+      - shelf
+      - codToItemMap
+  - start or reset
+    - case:
+      - [ ] successful (15)
+      - failed
+        - [ ] permission denied (16)
+        - [ ] state is not idle, ready, or purchased_complete (17)
+        - [ ] currentBalance is not zero (18)
+    - update variables:
+      - customerBalance = 0
+      - currentBalance = 0
+      - customerCoins empty
+      - returnCoins empty
+      - selectedItem = null
+      - returnItem = null
+  - break to maintenance
+    - case:
+      - [ ] successful (19)
+      - failed:
+        - [ ] permission denied (20)
+        - [ ] state is not idle or ready (21)
+    - update variables:
+      - state = idle
+- For Customer
+  - insert Coin
+    - case:
+      - [ ] successful (22)
+      - failed:
+        - [ ] state is not ready or purchasing (23)
+      - update variables:
+        - currentBalance
+        - customerBalance
+        - customerCoins
+        - state
+  - select Item
+    - case:
+      - [ ] successful (24)
+      - failed:
+        - [ ] state is not ready or purchasing (25)
+        - [ ] item is not found (26)
+        - [ ] item is out of stock (27)
+    - update variables:
+      - currentBalance
+      - selectedItem
+      - state
+  - request Refund
+    - case:
+      - [ ] successful (28)
+      - failed:
+        - [ ] state is purchasing (29)
+    - update variables:
+      - returnCoins
+      - customerCoins
+      - state
+  - requestPurchaseItem
+    - case:
+      - successful
+        - [ ] enough money (30)
+        - [ ] over money (31)
+      - failed:
+        - [ ] haven't selected item yet (32)
+        - [ ] not enough money (33)
+    - update variables:
+      - state
+      - shelf
+      - customerCoins is empty
+      - spareCoins
+      - machineBalance
+  - requestChange
+    - case:
+      - successful
+        - [ ] No change (34)
+        - [ ] enough money to give change to a customer (35)
+      - failed:
+        - [ ] not enough money to give change to a customer (36)
+    - update variables:
+      - currentBalance
+      - returnCoins
+      - spareCoins
+  - collect
+    - case:
+      - [ ] successful (37)
+      - failure:
+        - [ ] inappropriate state (38)
+        - [ ] balance is not 0 (39)
+    - update variables:
+      - state
+      - customerBalance
+      - currentBalance
+      - customerCoins
+      - returnCoins
+      - selectedItem
+      - returnItem

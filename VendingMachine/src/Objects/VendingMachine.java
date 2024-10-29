@@ -105,7 +105,7 @@ public class VendingMachine extends VendingMachineService implements AdminAction
         System.out.println(">>> Admin Adding " + item + " to " + amount);
 
         // check duplicate unique code
-        if (codeToItemMap.containsKey(item.code())) {
+        if (codeToItemMap.containsKey(item.code()) && codeToItemMap.get(item.code()) != item) {
             throw new IllegalArgumentException("You cannot add same code item to the shelf.");
         }
 
@@ -229,6 +229,7 @@ public class VendingMachine extends VendingMachineService implements AdminAction
 
         // get the current balance back if it subtracts from the last time
         if (this.selectedItem != null) {
+            System.out.println("Change Selected Item from" + this.selectedItem + "to" + selectedItem);
             currentBalance = currentBalance.add(this.selectedItem.price());
         }
 
@@ -258,6 +259,7 @@ public class VendingMachine extends VendingMachineService implements AdminAction
         returnCoins.putAll(customerCoins);
         customerCoins.clear();
         state = VendingMachineState.CANCELED;
+        currentBalance = BigDecimal.ZERO;
 
         // print overview that the Customer should update
         printCurrentState();
@@ -334,11 +336,11 @@ public class VendingMachine extends VendingMachineService implements AdminAction
         // check state
         checkState("Can't request change yet", VendingMachineState.PURCHASED);
 
-        //In CaseCase, insert coin enough
+        //In Case, insert coin enough
         if (currentBalance.compareTo(BigDecimal.ZERO) == 0) {
             System.out.println("No change");
         }
-        //In CaseCase, have to return change
+        //In Case, have to return change
         else {
             var returnBalance = currentBalance;
             var listOfSpareCoin = spareCoins.keySet().stream().sorted(Comparator.comparing(Coin::getValue).reversed())

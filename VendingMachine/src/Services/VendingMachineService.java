@@ -122,13 +122,12 @@ public class VendingMachineService {
      * @throws InvalidMachineStateException if some condition is not finished
      */
     protected void resetProcess() throws InvalidMachineStateException {
-        if (!List.of(VendingMachineState.IDLE, VendingMachineState.READY, VendingMachineState.PURCHASED_COMPLETED).contains(state) && currentBalance.compareTo(BigDecimal.ZERO) > 0) {
+        if (!List.of(VendingMachineState.IDLE, VendingMachineState.READY, VendingMachineState.PURCHASED_COMPLETED).contains(state) || currentBalance.compareTo(BigDecimal.ZERO) != 0) {
             throw new InvalidMachineStateException("Can't start or reset now");
         }
 
         state = VendingMachineState.READY;
         customerBalance = BigDecimal.ZERO;
-        currentBalance = BigDecimal.ZERO;
         customerCoins.clear();
         returnCoins.clear();
         selectedItem = null;

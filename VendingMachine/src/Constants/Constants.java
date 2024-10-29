@@ -27,17 +27,19 @@ public class Constants {
 
     // Items
     public static final Item coke = new Item("01", "Coke", BigDecimal.valueOf(1.25));
-    public static final Item milk = new Item("02", "Milk", BigDecimal.valueOf(1.50));
+    public static final Item water = new Item("02", "Water", BigDecimal.valueOf(1.00));
+    public static final Item milk = new Item("03", "Milk", BigDecimal.valueOf(1.50));
+    public static final Item coffee = new Item("04", "Coffee", BigDecimal.valueOf(1.75));
 
     // The 1st stock that the owner or admin prepared to sell in the vending machine
     public static final Map<Item, Integer> itemStock = Map.of(
-            coke, 5,
-            new Item("02", "Water", BigDecimal.valueOf(1)), 5,
+            coke, 6,
+            water, 4,
             milk, 5
     );
 
     // The 2nd stock
     public static final Map<Item, Integer> addOnItemStock = Map.of(
-            new Item("04", "Coffee", BigDecimal.valueOf(1.75)), 5
+            coffee, 5
     );
 }

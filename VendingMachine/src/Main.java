@@ -7,57 +7,45 @@ import static Constants.Constants.*;
 
 public class Main {
     public static void main(String[] args) {
-        // initiate vending machine
-        var vm = new VendingMachine(LIMIT_ITEM_QUANTITY_IN_VM);
+        // initialize Vending Machine from factory
+        VendingMachine vm = new VendingMachine(LIMIT_ITEM_QUANTITY_IN_VM);
+        // initialize Admin
+        Admin admin = new Admin(vm);
+        // initialize Customer
+        Customer customer = new Customer(vm);
 
-        // set up Admin and Customer
-        var admin = new Admin(vm);
-        var customer = new Customer(vm);
+        // admin add coin with negative amount
+        admin.addCoins(Coin.TEN_PENCE, -1);
 
-        // Admin: adding items from item stock
-        for (var item : itemStock.entrySet()) {
-            admin.addItem(item.getKey(), item.getValue());
-        }
-
-        for (var item : addOnItemStock.entrySet()) {
-            admin.addItem(item.getKey(), item.getValue());
-        }
-
-        // Admin: starting the system
-        admin.startOrReset();
-
-        // Customer: canceling
-        customer.insertCoin(Coin.ONE_POUND);
-        customer.selectItem("02");
-        customer.requestRefund();
-        customer.collect();
-
-        // Customer: purchasing with enough coin
-        customer.insertCoin(Coin.ONE_POUND);
-        customer.selectItem("02");
-        customer.requestPurchaseItem();
-        customer.collect();
-
-        // Customer: purchasing with over coins and change is not enough
-        customer.insertCoin(Coin.TWO_POUNDS);
-        customer.selectItem("03");
-        customer.requestPurchaseItem();
-        admin.addCoins(Coin.FIFTY_PENCE, 1);
-        customer.requestChange();
-        customer.collect();
-
-        // Admin: breaking to maintain
-        admin.breakToMaintenance();
-
-        // Admin: withdrawing coin
-        admin.withdrawCoins();
-
-        // Admin: adding coins from saving
-        for (var coin : changeCoin.entrySet()) {
+        // admin add coin from save
+        for (var coin: changeCoin.entrySet()) {
             admin.addCoins(coin.getKey(), coin.getValue());
         }
 
-        // Admin: starting system again
+        // admin test the system with add negative amount with addItem
+        admin.addItem(milk, -1);
+
+        // admin add items from 1st stock
+        for (var item: itemStock.entrySet()) {
+            admin.addItem(item.getKey(), item.getValue());
+        }
+
+        // if there is the another one, but it may be over the limit capacity of the machine
+        for (var item: addOnItemStock.entrySet()) {
+            admin.addItem(item.getKey(), item.getValue());
+        }
+
+        // admin start the system
         admin.startOrReset();
+
+        // admin withdraw coin during vending machine is opening for selling
+        admin.withdrawCoins();
+
+        // admin break the system
+        admin.breakToMaintenance();
+
+        // admin withdraw coin during Idle state
+        admin.withdrawCoins();
+
     }
 }
