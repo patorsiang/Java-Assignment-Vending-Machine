@@ -30,7 +30,7 @@ public class VendingMachineService {
     protected BigDecimal currentBalance; // the total money that the Customer has in the machine, excluding the price of an item that the Customer selected
     protected Item selectedItem; // store the item that Customer selected
     protected Item returnItem; // store the item that Customer bought
-
+    protected static final String unavailableMsg = "The Vending Machine is unavailable. Try again later.";
     /**
      * Construct VendingMachineService
      *

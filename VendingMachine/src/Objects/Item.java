@@ -12,7 +12,7 @@ public record Item(
         String code,   //Code of the Item, should be a two-digit number from 01 to 99.
         String name,   //Name of the Item, cannot be empty.
         BigDecimal price   //Price of the Item must be non-negative.
-) {
+        ) {
     /**
      * Canonical constructor with validation logic.
      *

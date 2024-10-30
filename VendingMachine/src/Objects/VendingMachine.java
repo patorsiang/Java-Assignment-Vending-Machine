@@ -13,6 +13,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.*;
 
+
 /**
  * The vending machine class provides a facility to manage attributes in vending
  * following the List of necessary actions of Admin and Customer
@@ -70,7 +71,7 @@ public class VendingMachine extends VendingMachineService implements AdminAction
         System.out.println(">>> Admin Withdrawing Coins");
 
         // check state should be in the idle
-        checkState("This is not a time to withdraw Coins, State should be Idle", VendingMachineState.IDLE);
+        checkState("Coins cannot be withdrawn now. Please set the machine to Idle mode.", VendingMachineState.IDLE);
 
         // display the result
         System.out.println("This is the amount that you withdrew");
@@ -106,7 +107,7 @@ public class VendingMachine extends VendingMachineService implements AdminAction
 
         // check duplicate unique code
         if (codeToItemMap.containsKey(item.code()) && codeToItemMap.get(item.code()) != item) {
-            throw new IllegalArgumentException("You cannot add same code item to the shelf.");
+            throw new IllegalArgumentException("An item with this code already exists on the shelf.");
         }
 
         // checking amount param, not less than zero
@@ -119,7 +120,7 @@ public class VendingMachine extends VendingMachineService implements AdminAction
         }
 
         //Checking state of the machine should be Idle
-        checkState("This is not a time to add Items, State should be Idle", VendingMachineState.IDLE);
+        checkState("Items cannot be added right now. Please set the machine to Idle mode.", VendingMachineState.IDLE);
 
         // passing all conditions, minus remaining capacity by amount of the Item
         remainingCapacity -= amount;
@@ -160,10 +161,10 @@ public class VendingMachine extends VendingMachineService implements AdminAction
         checkPermission("break to maintenance.");
 
         // show interaction that Admin would like to pause the machine
-        System.out.println(">>> Admin Breaking out of maintenance");
+        System.out.println(">>> Admin breaking to maintenance");
 
         //Check the state, aim not to disturb the purchase process
-        checkState("This is not a time to break out of maintenance", VendingMachineState.READY, VendingMachineState.IDLE);
+        checkState("Cannot set IDLE state at this time. Let customer complete Purchasing process first.", VendingMachineState.READY, VendingMachineState.IDLE);
 
         // passing all conditions, set state to IDLE
         state = VendingMachineState.IDLE;
@@ -184,7 +185,7 @@ public class VendingMachine extends VendingMachineService implements AdminAction
         System.out.println(">>> Customer inserting a " + coin + " coin");
 
         // checking the state should be READY and PURCHASING
-        checkState("The Vending Machine is unavailable. Try again later.", VendingMachineState.READY, VendingMachineState.PURCHASING);
+        checkState(unavailableMsg, VendingMachineState.READY, VendingMachineState.PURCHASING);
 
         // update state to be PURCHASING
         state = VendingMachineState.PURCHASING;
@@ -212,7 +213,7 @@ public class VendingMachine extends VendingMachineService implements AdminAction
         System.out.println(">>> Customer selecting item, " + code);
 
         // check state
-        checkState("The Vending Machine is unavailable. Try again later.", VendingMachineState.READY, VendingMachineState.PURCHASING);
+        checkState(unavailableMsg, VendingMachineState.READY, VendingMachineState.PURCHASING);
 
         // get the Item from code
         var selectedItem = codeToItemMap.get(code);
@@ -253,7 +254,7 @@ public class VendingMachine extends VendingMachineService implements AdminAction
         System.out.println(">>> Customer requesting refund");
 
         // check state
-        checkState("Can't request refund at this state", VendingMachineState.PURCHASING);
+        checkState("Refunds are not available in the current state.", VendingMachineState.PURCHASING);
 
         // update returned Coins, state, customer Coins
         returnCoins.putAll(customerCoins);
@@ -287,7 +288,7 @@ public class VendingMachine extends VendingMachineService implements AdminAction
         System.out.println(">>> Customer requesting purchase item");
 
         // Check state
-        checkState("Haven't insert a Coin and select an Item", VendingMachineState.PURCHASING);
+        checkState("A coin has not been inserted, and no item has been selected.", VendingMachineState.PURCHASING);
 
         //Case: A customer has not selected the Item yet.
         if (selectedItem == null) {
@@ -296,17 +297,11 @@ public class VendingMachine extends VendingMachineService implements AdminAction
 
         //CaseCase: not enough money
         if (currentBalance.compareTo(BigDecimal.ZERO) < 0) {
-            throw new PurchasedException("Not enough money");
+            throw new PurchasedException("Insufficient funds. Please insert more coins.");
         }
 
         // Case: Success
         state = VendingMachineState.PURCHASED;
-
-        returnItem = selectedItem;
-        selectedItem = null;
-
-        shelf.put(returnItem, shelf.get(returnItem) - 1);
-        remainingCapacity += 1;
 
         for (var coin: customerCoins.keySet()) {
             spareCoins.put(coin, spareCoins.getOrDefault(coin, 0) + customerCoins.get(coin));
@@ -319,7 +314,14 @@ public class VendingMachine extends VendingMachineService implements AdminAction
         printCurrentState();
 
         // dropping Item to return bucket
-        if (returnItem != null) {
+        if (selectedItem != null) {
+
+            returnItem = selectedItem;
+            selectedItem = null;
+
+            shelf.put(returnItem, shelf.get(returnItem) - 1);
+            remainingCapacity += 1;
+
             System.out.println("Putting the item in return bucket......");
             System.out.println("clunk-clink");
             System.out.println("Return item: " + returnItem);
@@ -340,7 +342,7 @@ public class VendingMachine extends VendingMachineService implements AdminAction
         System.out.println(">>> Customer requesting change");
 
         // check state
-        checkState("Can't request change yet", VendingMachineState.PURCHASED);
+        checkState("Change is not available yet. Please complete the purchase first.", VendingMachineState.PURCHASED);
 
         //In Case, insert coin enough
         if (currentBalance.compareTo(BigDecimal.ZERO) == 0) {
@@ -374,7 +376,7 @@ public class VendingMachine extends VendingMachineService implements AdminAction
 
             //The spare coin is not enough
             if (currentBalance.compareTo(BigDecimal.ZERO) > 0) {
-                throw new InsufficientSpareChangeCoinsException("Can't request change yet, Please Contact Admin");
+                throw new InsufficientSpareChangeCoinsException("Change is not available at this time. Please contact an administrator for assistance.");
             }
 
             //Add the sound like dropping the coin to the return bucket
@@ -401,14 +403,14 @@ public class VendingMachine extends VendingMachineService implements AdminAction
 
         // check the state and current balance; it should return to Customer before state back to ready
         if (! List.of(VendingMachineState.PURCHASED, VendingMachineState.CANCELED).contains(state)) {
-            throw new InvalidMachineStateException("The process is not finished yet. There are nothing in the return bucket.");
+            throw new InvalidMachineStateException("The process is not complete. There is nothing in the return bucket.");
         } else if (state == VendingMachineState.PURCHASED && currentBalance.compareTo(BigDecimal.ZERO) > 0) {
-            throw new InvalidMachineStateException("The process is not finished yet. Please Contact Admin");
+            throw new InvalidMachineStateException("The process is not complete. Please contact an administrator for assistance.");
         }
 
         // update the state, and set the process back to ready
         state = VendingMachineState.PURCHASED_COMPLETED;
-        System.out.println("Thank you for purchasing! See you later!");
+        System.out.println("Thank you for your purchase! See you again soon!");
         resetProcess();
     }
 

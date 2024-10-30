@@ -42,4 +42,5 @@ public class Constants {
     public static final Map<Item, Integer> addOnItemStock = Map.of(
             coffee, 5
     );
+
 }

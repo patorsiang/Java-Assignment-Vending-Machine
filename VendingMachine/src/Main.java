@@ -1,7 +1,10 @@
 import Constants.Coin;
 import Objects.Admin;
 import Objects.Customer;
+import Objects.Item;
 import Objects.VendingMachine;
+
+import java.math.BigDecimal;
 
 import static Constants.Constants.*;
 
@@ -30,7 +33,12 @@ public class Main {
             admin.addItem(item.getKey(), item.getValue());
         }
 
+        // admin add coffee, but there is no item left
         admin.addItem(coffee, 0);
+
+        // admin make a mistake, add the same code
+        var tea = new Item("04", "tea", BigDecimal.valueOf(1.1));
+        admin.addItem(tea,  0);
 
         // if there is the another one, but it may be over the limit capacity of the machine
         for (var item : addOnItemStock.entrySet()) {
@@ -71,8 +79,9 @@ public class Main {
         customer.collect();
 
         // customer insert coin over price
-        customer.selectItem("02");
+        // customer insert coin before select item
         customer.insertCoin(Coin.TWO_POUNDS);
+        customer.selectItem("02");
 
         // customer collect his item and coin before requestPurchaseItem
         customer.collect();
