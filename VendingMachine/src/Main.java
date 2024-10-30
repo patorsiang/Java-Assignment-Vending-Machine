@@ -35,11 +35,37 @@ public class Main {
             admin.addItem(item.getKey(), item.getValue());
         }
 
+        // customer try inserting Coin and selecting Item before opening
+        customer.insertCoin(Coin.TEN_PENCE);
+        customer.selectItem("01");
+        customer.collect();
+        customer.requestRefund();
+        customer.requestChange();
+        customer.requestPurchaseItem();
+
         // admin start the system
         admin.startOrReset();
 
         // admin withdraw coin during vending machine is opening for selling
         admin.withdrawCoins();
+
+        // customer purchase Item
+        customer.selectItem("01");
+        customer.insertCoin(Coin.TEN_PENCE);
+        customer.insertCoin(Coin.ONE_POUND);
+        // not enough money
+        customer.requestPurchaseItem();
+        customer.insertCoin(Coin.TEN_PENCE);
+        customer.insertCoin(Coin.FIVE_PENCE);
+        // enough money
+        customer.requestPurchaseItem();
+        customer.collect();
+
+        // over price
+        customer.selectItem("02");
+        customer.insertCoin(Coin.TWO_POUNDS);
+        customer.requestPurchaseItem();
+        customer.collect();
 
         // admin break the system
         admin.breakToMaintenance();

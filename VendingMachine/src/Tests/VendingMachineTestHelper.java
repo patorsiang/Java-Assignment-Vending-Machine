@@ -76,4 +76,10 @@ public class VendingMachineTestHelper {
         returnItemField.setAccessible(true);
         return (Item) returnItemField.get(vm);
     }
+
+    public static int getRemainingCapacity(@NotNull VendingMachine vm) throws NoSuchFieldException, IllegalAccessException {
+        Field remainingCapacityField = vm.getClass().getSuperclass().getDeclaredField("remainingCapacity");
+        remainingCapacityField.setAccessible(true);
+        return (int) remainingCapacityField.get(vm);
+    }
 }

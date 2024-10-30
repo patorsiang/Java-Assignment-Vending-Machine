@@ -268,6 +268,9 @@ public class VendingMachine extends VendingMachineService implements AdminAction
         if (!returnCoins.isEmpty()) {
             System.out.println("clink-clink");
             printBalance("Return", customerBalance, returnCoins);
+        } else {
+            state = VendingMachineState.PURCHASED_COMPLETED;
+            resetProcess();
         }
     }
 
@@ -282,6 +285,9 @@ public class VendingMachine extends VendingMachineService implements AdminAction
     public void requestPurchaseItem() throws PurchasedException, InsufficientSpareChangeCoinsException, InvalidMachineStateException {
         // show interaction that customer purchase
         System.out.println(">>> Customer requesting purchase item");
+
+        // Check state
+        checkState("Haven't insert a Coin and select an Item", VendingMachineState.PURCHASING);
 
         //Case: A customer has not selected the Item yet.
         if (selectedItem == null) {

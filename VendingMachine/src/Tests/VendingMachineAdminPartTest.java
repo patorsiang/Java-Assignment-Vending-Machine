@@ -26,21 +26,14 @@ public class VendingMachineAdminPartTest {
     }
 
     @Test
-    public void testInvalidPermissionAddCoin() {
+    public void testCoin() throws NoSuchFieldException, IllegalAccessException {
+        // Failure: Permission denied
         assertThrows(SecurityException.class, () -> vm.addCoins(Coin.TEN_PENCE, 1));
-    }
-
-    @Test
-    public void testNegativeAmountAddCoin() {
+        // Failure: Negative amount
         vm.setAdminRole();
         assertThrows(IllegalArgumentException.class, () -> vm.addCoins(Coin.TEN_PENCE, -1));
-    }
-
-    @Test
-    public void testSuccessCaseAddCoin() throws NoSuchFieldException, IllegalAccessException {
-        vm.setAdminRole();
+        // Success
         vm.addCoins(Coin.TEN_PENCE, 1);
-        // Access the private field "spareCoins" in the VendingMachine class
         var spareCoinsField = getSpareCoins(vm);
         assertEquals(1, spareCoinsField.get(Coin.TEN_PENCE));
         var machineBalanceField = getMachineBalance(vm);
@@ -48,12 +41,10 @@ public class VendingMachineAdminPartTest {
     }
 
     @Test
-    public void testInvalidPermissionWithdrawCoin() {
+    public void testFailureCasesWithdrawCoin() throws InvalidMachineStateException {
+        // Permission Denied
         assertThrows(SecurityException.class, () -> vm.withdrawCoins());
-    }
-
-    @Test
-    public void testStateIsNotIdleWithdrawCoin() throws InvalidMachineStateException {
+        // Withdraw Coins when the machine is opening.
         vm.setAdminRole();
         vm.startOrReset();
         assertThrows(InvalidMachineStateException.class, () -> vm.withdrawCoins());
@@ -70,33 +61,19 @@ public class VendingMachineAdminPartTest {
     }
 
     @Test
-    public void testInvalidPermissionAddItem() {
+    public void testFailureCasesPermissionAddItem() throws LimitExceededException, InvalidMachineStateException {
+        // Permission Denied
         assertThrows(SecurityException.class, () -> vm.addItem(coke, 1));
-    }
-
-    @Test
-    public void testDuplicatedCodeAddItem() throws LimitExceededException, InvalidMachineStateException {
         vm.setAdminRole();
+        // Duplicated code
         vm.addItem(coke, 1);
         assertThrows(IllegalArgumentException.class, () -> vm.addItem(new Item("01", "Tea", BigDecimal.valueOf(2.00)), 1));
-    }
-
-    @Test
-    public void testStateIsNotIdleAddItem() throws InvalidMachineStateException {
-        vm.setAdminRole();
+        // Add Items with the machine is opening
         vm.startOrReset();
         assertThrows(InvalidMachineStateException.class, () -> vm.addItem(coke, 1));
-    }
-
-    @Test
-    public void testNegativeAmountAddItem() {
-        vm.setAdminRole();
+        // Negative amount
         assertThrows(IllegalArgumentException.class, () -> vm.addItem(coke, -1));
-    }
-
-    @Test
-    public void testOverLimitCapacityAddItem() {
-        vm.setAdminRole();
+        // Over the limit capacity
         assertThrows(LimitExceededException.class, () -> vm.addItem(coke, LIMIT_ITEM_QUANTITY_IN_VM + 1));
     }
 
@@ -113,12 +90,10 @@ public class VendingMachineAdminPartTest {
     }
 
     @Test
-    public void testInvalidPermissionReset() {
+    public void testFailureCasesReset() throws InvalidMachineStateException {
+        // Permission Denied
         assertThrows(SecurityException.class, () -> vm.startOrReset());
-    }
-
-    @Test
-    public void testStateIsPurchasingReset() throws InvalidMachineStateException {
+        // Reset Machine while there is a customer using
         vm.setAdminRole();
         vm.startOrReset();
         vm.insertCoin(Coin.TEN_PENCE);
@@ -145,12 +120,10 @@ public class VendingMachineAdminPartTest {
     }
 
     @Test
-    public void testInvalidPermissionBreakToMaintenance() {
+    public void testFailureCasesBreakToMaintenance() throws InvalidMachineStateException {
+        // Permission Denied
         assertThrows(SecurityException.class, () -> vm.breakToMaintenance());
-    }
-
-    @Test
-    public void testStateIsPurchasingBreakToMaintenance() throws InvalidMachineStateException {
+        // Break the machine before finishing the purchase process
         vm.setAdminRole();
         vm.startOrReset();
         vm.insertCoin(Coin.TEN_PENCE);
