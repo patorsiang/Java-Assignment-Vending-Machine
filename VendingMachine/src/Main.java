@@ -18,7 +18,7 @@ public class Main {
         admin.addCoins(Coin.TEN_PENCE, -1);
 
         // admin add coin from save
-        for (var coin: changeCoin.entrySet()) {
+        for (var coin : changeCoin.entrySet()) {
             admin.addCoins(coin.getKey(), coin.getValue());
         }
 
@@ -26,12 +26,14 @@ public class Main {
         admin.addItem(milk, -1);
 
         // admin add items from 1st stock
-        for (var item: itemStock.entrySet()) {
+        for (var item : itemStock.entrySet()) {
             admin.addItem(item.getKey(), item.getValue());
         }
 
+        admin.addItem(coffee, 0);
+
         // if there is the another one, but it may be over the limit capacity of the machine
-        for (var item: addOnItemStock.entrySet()) {
+        for (var item : addOnItemStock.entrySet()) {
             admin.addItem(item.getKey(), item.getValue());
         }
 
@@ -49,6 +51,13 @@ public class Main {
         // admin withdraw coin during vending machine is opening for selling
         admin.withdrawCoins();
 
+        // customer does not play following the step, try to collect, request refund,
+        // change, and purchase before inserting coin or select item
+        customer.collect();
+        customer.requestRefund();
+        customer.requestChange();
+        customer.requestPurchaseItem();
+
         // customer purchase Item
         customer.selectItem("01");
         customer.insertCoin(Coin.TEN_PENCE);
@@ -61,13 +70,49 @@ public class Main {
         customer.requestPurchaseItem();
         customer.collect();
 
-        // over price
+        // customer insert coin over price
         customer.selectItem("02");
         customer.insertCoin(Coin.TWO_POUNDS);
         customer.requestPurchaseItem();
+
+        // admin break the system during customer is not finished his purchasing
+        admin.breakToMaintenance();
+
+        // customer collect his item and coin
         customer.collect();
 
-        // admin break the system
+        // customer select the Item out of the Catalog
+        customer.selectItem("07");
+
+        // customer select the Item out of stock
+        customer.selectItem("04");
+
+        // admin break to maintain again
+        admin.breakToMaintenance();
+
+        // admin withdraw coin during Idle state
+        admin.withdrawCoins();
+
+        // admin state the machine again
+        admin.startOrReset();
+
+        // customer insert coin over price, but the spare coins in the machine is not enough
+        customer.selectItem("03");
+        customer.insertCoin(Coin.TWO_POUNDS);
+        customer.requestPurchaseItem();
+
+        // admin add coin to be a change for customer
+        admin.addCoins(Coin.ONE_PENNY, 1);
+        admin.addCoins(Coin.TWO_PENCE, 2);
+        admin.addCoins(Coin.FIVE_PENCE, 1);
+        admin.addCoins(Coin.TWENTY_PENCE, 1);
+        admin.addCoins(Coin.TEN_PENCE, 2);
+
+        // Customer must request change manual
+        customer.requestChange();
+        customer.collect();
+
+        // admin break to maintain again
         admin.breakToMaintenance();
 
         // admin withdraw coin during Idle state
