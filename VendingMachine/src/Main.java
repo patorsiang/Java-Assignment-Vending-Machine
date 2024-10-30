@@ -73,6 +73,11 @@ public class Main {
         // customer insert coin over price
         customer.selectItem("02");
         customer.insertCoin(Coin.TWO_POUNDS);
+
+        // customer collect his item and coin before requestPurchaseItem
+        customer.collect();
+
+        // customer request purchase item
         customer.requestPurchaseItem();
 
         // admin break the system during customer is not finished his purchasing
@@ -108,7 +113,10 @@ public class Main {
         admin.addCoins(Coin.TWENTY_PENCE, 1);
         admin.addCoins(Coin.TEN_PENCE, 2);
 
-        // Customer must request change manual
+        // customer collect his item and coin before requestChange
+        customer.collect();
+
+        // Admin suggest that Customer must request change manual and after the collect item and change
         customer.requestChange();
         customer.collect();
 

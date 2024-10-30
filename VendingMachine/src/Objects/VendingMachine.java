@@ -390,18 +390,20 @@ public class VendingMachine extends VendingMachineService implements AdminAction
      */
     @Override
     public void collect() throws InvalidMachineStateException {
-        // check the state and current balance; it should return to Customer before state back to ready
-        if (! List.of(VendingMachineState.PURCHASED, VendingMachineState.CANCELED).contains(state)) {
-            throw new InvalidMachineStateException("The process is not finished yet. There are nothing in the return bucket.");
-        } else if (state == VendingMachineState.PURCHASED && currentBalance.compareTo(BigDecimal.ZERO) > 0) {
-            throw new InvalidMachineStateException("The process is not finished yet. Please Contact Admin");
-        }
-
         // show interaction that Customer collecting coin and/or Item in return bucket
         if (state == VendingMachineState.CANCELED) {
             System.out.println(">>> Customer collecting refunded coin");
         } else if (state == VendingMachineState.PURCHASED) {
             System.out.println(">>> Customer collecting items and change coin");
+        } else {
+            System.out.println(">>> Customer collecting things from return bucket");
+        }
+
+        // check the state and current balance; it should return to Customer before state back to ready
+        if (! List.of(VendingMachineState.PURCHASED, VendingMachineState.CANCELED).contains(state)) {
+            throw new InvalidMachineStateException("The process is not finished yet. There are nothing in the return bucket.");
+        } else if (state == VendingMachineState.PURCHASED && currentBalance.compareTo(BigDecimal.ZERO) > 0) {
+            throw new InvalidMachineStateException("The process is not finished yet. Please Contact Admin");
         }
 
         // update the state, and set the process back to ready
